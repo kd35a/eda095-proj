@@ -6,6 +6,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -15,14 +17,19 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import message.ChatroomMessage;
 import message.Message;
 import client.Client;
 
 import common.Mailbox;
 
 public class ChatWindow extends JFrame {
+	
 	private static final long serialVersionUID = 1L;
 	
+	private int activeRoomIndex;
+	
+	private List<String> activeRooms;
 	private Mailbox<Message> inbox;
 	private Mailbox<Message> outbox;
 	private Client client;
@@ -38,12 +45,13 @@ public class ChatWindow extends JFrame {
 	private JButton sendButton;
 	private JPanel southPanel;
 	
-	public ChatWindow() {
+	public ChatWindow(String host, int port) {
+		activeRooms = new ArrayList<String>();
 		inbox = new Mailbox<Message>();
 		outbox = new Mailbox<Message>();
 		
 		try {
-			client = new Client("localhost", 1234, inbox, outbox);
+			client = new Client(host, port, inbox, outbox);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -100,8 +108,13 @@ public class ChatWindow extends JFrame {
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			String s = messageInputField.getText();
-			Message m = Message.fromJSON(s);
+			String msg = messageInputField.getText();
+			String room = activeRooms.get(activeRoomIndex); 
+			
+			ChatroomMessage m = new ChatroomMessage();
+			m.setMsg(msg);
+			m.setRoom(room);
+			
 			outbox.put(m);
 		}
 		
@@ -117,7 +130,13 @@ public class ChatWindow extends JFrame {
 	}
 
 	public static void main(String[] args) {
-		new ChatWindow();
+		if (args.length < 2) {
+			System.out.println("Usage: java ChatWindow <host> <port>");
+		} else {			
+			String host = args[0];
+			int port = Integer.parseInt(args[1]);
+			new ChatWindow(host, port);
+		}
 	}
 
 }
