@@ -22,13 +22,21 @@ import client.Client;
 import common.Mailbox;
 
 public class ChatWindow extends JFrame {
-
 	private static final long serialVersionUID = 1L;
 	
 	private Mailbox<Message> inbox;
 	private Mailbox<Message> outbox;
-
-	private JTextField textField;
+	
+	/*
+	 * GUI components
+	 */
+	private JPanel mainPanel;
+	private JList chatRoomList;
+	private JScrollPane scrollPane;
+	private JTextArea chatMessages;
+	private JTextField messageInputField;
+	private JButton sendButton;
+	private JPanel southPanel;
 	
 	public ChatWindow() {
 		inbox = new Mailbox<Message>();
@@ -50,57 +58,57 @@ public class ChatWindow extends JFrame {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		addWindowListener(new MyWindow());
 
-		JPanel panel = new JPanel();
-		getContentPane().add(panel);
-		panel.setLayout(new BorderLayout(2, 2));
+		mainPanel = new JPanel();
+		getContentPane().add(mainPanel);
+		mainPanel.setLayout(new BorderLayout(2, 2));
 
 		String[] data = { "#abc", "#foo", "#bar", "#abc", "#foo", "#bar",
 				"#abc", "#foo", "#bar", "#abc", "#foo", "#bar", "#abc", "#foo",
 				"#bar", "#abc", "#foo", "#bar" };
-		JList list = new JList(data);
-		JScrollPane scrollPane = new JScrollPane(list);
-		panel.add(scrollPane, BorderLayout.WEST);
+		chatRoomList = new JList(data);
+		scrollPane = new JScrollPane(chatRoomList);
+		mainPanel.add(scrollPane, BorderLayout.WEST);
 
-		JTextArea textArea = new JTextArea();
-		textArea.setText("Looolllkjn<aefsjölnasföljnwew\n");
-		panel.add(textArea, BorderLayout.CENTER);
+		chatMessages = new JTextArea();
+		chatMessages.setText("Looolllkjn<aefsjölnasföljnwew\n");
+		mainPanel.add(chatMessages, BorderLayout.CENTER);
 		pack();
 
-		JPanel southPanel = new JPanel(new BorderLayout(2, 2));
+		southPanel = new JPanel(new BorderLayout(2, 2));
+		
+		messageInputField = new JTextField();
+		southPanel.add(messageInputField, BorderLayout.CENTER);
 
-		textField = new JTextField();
-		southPanel.add(textField, BorderLayout.CENTER);
+		sendButton = new JButton("Send message");
+		southPanel.add(sendButton, BorderLayout.EAST);
 
-		JButton button = new JButton("Send message");
-		southPanel.add(button, BorderLayout.EAST);
-
-		panel.add(southPanel, BorderLayout.SOUTH);
+		mainPanel.add(southPanel, BorderLayout.SOUTH);
 
 		ActionListener sendListener = new SendMessageListener();
-		textField.addActionListener(sendListener);
-		button.addActionListener(sendListener);
+		messageInputField.addActionListener(sendListener);
+		sendButton.addActionListener(sendListener);
 
 		setVisible(true);
 	}
 
 	private class SendMessageListener implements ActionListener {
-
+		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			String s = textField.getText();
+			String s = messageInputField.getText();
 			Message m = MessageFactory.create(s);
 			outbox.put(m);
 		}
-
+		
 	}
 
 	private class MyWindow extends WindowAdapter {
-
+		
 		public void windowClosing(WindowEvent e) {
 			System.out.println("Exit-button pressed");
 			// TODO Close connection to server here
 		}
-
+		
 	}
 
 	public static void main(String[] args) {
