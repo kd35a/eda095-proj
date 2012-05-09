@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import org.json.simple.parser.ParseException;
+
 import message.Message;
 
 import common.Mailbox;
@@ -37,7 +39,8 @@ public class ServerReadSocketThread extends Thread {
 		while (active) {
 			try {
 				//Puts a message in the shared mailbox
-				Message msg = Message.fromJSON(in.readLine());
+				String input = in.readLine();
+				Message msg = Message.fromJSON(input);
 				msg.setFrom(cc.getNick());
 				System.out.println("received " + msg.toJSON());
 				messages.put(msg);
