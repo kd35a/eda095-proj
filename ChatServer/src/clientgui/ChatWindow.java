@@ -1,6 +1,8 @@
 package clientgui;
 
 import java.awt.BorderLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -15,16 +17,16 @@ public class ChatWindow extends JFrame {
 
 	public ChatWindow() {
 		setTitle("ChatServer: <server-name>"); // TODO Get the servers name
-//		setSize(800, 600);
 		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		addWindowListener(new MyWindow());
 		
 		JPanel panel = new JPanel();
 		getContentPane().add(panel);
 		panel.setLayout(new BorderLayout(2, 2));
 		
 		String[] data = {"#abc", "#foo", "#bar", "#abc", "#foo", "#bar", "#abc", "#foo", "#bar", "#abc", "#foo", "#bar", "#abc", "#foo", "#bar", "#abc", "#foo", "#bar"};
-		JList<String> list = new JList<String>(data);
+		JList list = new JList(data);
 		JScrollPane scrollPane = new JScrollPane(list);
 		panel.add(scrollPane, BorderLayout.WEST);
 		
@@ -48,5 +50,14 @@ public class ChatWindow extends JFrame {
 		ChatWindow cw = new ChatWindow();
 		cw.setVisible(true);
 	}
-
+	
+	private class MyWindow extends WindowAdapter {
+		
+		public void windowClosing(WindowEvent e) {
+			System.out.println("Exit-button pressed");
+			// TODO Close connection to server here
+		}
+		
+	}
+	
 }
