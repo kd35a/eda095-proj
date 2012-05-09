@@ -1,0 +1,27 @@
+User1 -> User2
+==============
+{ "pm": { "to": "u2", "msg": "hej", "time": "2012-05-09 11:35:22 +0200" } }
+
+User -> Chatroom
+================
+{ "cm": { "room": "kryptoanarki", "msg": "hallå", "time": "2012-05-09 11:35:22 +0200" } }
+
+Join chatroom
+=============
+{ "join": { "room": "kryptoanarki", "time": "2012-05-09 11:35:22 +0200" } }
+
+Part chatroom
+=============
+{ "part": { "room": "kryptoanarki", "time": "2012-05-09 11:35:22 +0200" } }
+
+Connect
+==========
+{ "connect": { "nick": "u", "time": "2012-05-09 11:35:22 +0200" } }
+
+Disconnect
+==========
+{ "disconnect": { "time": "2012-05-09 11:35:22 +0200" } }
+
+Set nickname
+============
+{ "nick": { "nick": "v" } }

@@ -33,7 +33,7 @@ public class ServerReadSocketThread extends Thread {
 		while (active) {
 			try {
 				//Puts a message in the shared mailbox
-				messages.addMessage(in.readLine());				
+				messages.put(in.readLine());				
 			} catch (IOException e) {
 				System.out.println("Failed getting input from client "
 						+ socket.getInetAddress());
