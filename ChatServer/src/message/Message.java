@@ -24,6 +24,10 @@ public abstract class Message {
 		return msg.toJSONString();
 	}
 	
+	public String getType() {
+		return type;
+	}
+	
 	public void setTime(String s) {
 		values.put("time", s);
 	}
@@ -31,7 +35,14 @@ public abstract class Message {
 	public String getTime() {
 		return values.get("time");
 	}
+
+	public void setFrom(String s) {
+		values.put("from", s);
+	}
 	
+	public String getFrom() {
+		return values.get("from");
+	}
 	public void setValues(Map<String, String> values) {
 		this.values = values;
 	}
@@ -70,5 +81,6 @@ public abstract class Message {
 		}
 		return null;
 	}
+
 
 }

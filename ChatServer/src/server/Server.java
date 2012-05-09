@@ -3,6 +3,10 @@ package server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
+
+import message.Message;
 import common.Mailbox;
 /**
  * A Chat server. Is currently run by the main thread, and accepts connections
@@ -12,12 +16,19 @@ public class Server {
 
 	private String serverName; // TODO: USE ME!
 	private int port;
-	private Mailbox messages;
+	private Mailbox<Message> messages;
+	private ConcurrentHashMap<String, ClientConnection> clientList;
 
 	public Server(String serverName, int port) {
 		this.serverName = serverName;
 		this.port = port;
-		this.messages = new Mailbox();
+		this.messages = new Mailbox<Message>();
+		this.clientList = new ConcurrentHashMap<String, ClientConnection>();
+		
+		/* Sets up the consumer thread, which will poll messages
+		 * from the mailbox which all clients send to. */
+		MessageConsumerThread consumer = new MessageConsumerThread(clientList, messages);
+		consumer.start();
 	}
 
 	public void start() {
@@ -29,8 +40,17 @@ public class Server {
 				 * creates a Client object.
 				 */
 				Socket s = ss.accept();
-				Thread t = new ServerReadSocketThread(s, messages);
-				t.start();
+				
+				/* Create the corresponding client connection */
+				Mailbox<Message> outgoing = new Mailbox<Message>();
+				ClientConnection cc = new ClientConnection(outgoing);
+				clientList.put(cc.getNick(), cc);
+				System.out.println("Client " + cc.getNick() + " connected.");
+				/* Starting threads */
+				Thread read = new ServerReadSocketThread(s, messages, cc);
+				read.start();
+				Thread write = new ServerWriteSocketThread(s, outgoing);
+				write.start();
 			}
 		} catch (IOException e) {
 			System.err.println("Failed setting up server socket.");
