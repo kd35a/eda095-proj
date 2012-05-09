@@ -115,6 +115,7 @@ public class ChatWindow extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			String msg = messageInputField.getText();
+			messageInputField.setText("");
 			
 			int index = tabbedPane.getSelectedIndex();
 			String room = tabbedPane.getTitleAt(index); 
@@ -122,6 +123,9 @@ public class ChatWindow extends JFrame {
 			ChatroomMessage m = new ChatroomMessage();
 			m.setMsg(msg);
 			m.setRoom(room);
+			m.setSender("Ola-Conny");
+			
+			chatrooms.get(index).addMessage(m);
 			
 			outbox.put(m);
 		}

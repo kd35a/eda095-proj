@@ -1,5 +1,7 @@
 package clientgui;
 
+import java.awt.BorderLayout;
+
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
@@ -16,8 +18,10 @@ public class Chatroom extends JPanel {
 	}
 	
 	private void initGUI() {
+		setLayout(new BorderLayout());
+		
 		text = new JTextArea();
-		add(text);
+		add(text, BorderLayout.CENTER);
 	}
 	
 	public void addMessage(ChatroomMessage m) {
