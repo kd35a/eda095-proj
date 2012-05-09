@@ -22,5 +22,13 @@ public class PrivateMessage extends Message {
 	public String getMsg() {
 		return values.get("msg");
 	}
+	
+	public void setSender(String s) {
+		values.put("sender", s);
+	}
+	
+	public String getSender() {
+		return values.get("sender");
+	}
 
 }
