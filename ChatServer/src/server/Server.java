@@ -5,6 +5,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import common.Mailbox;
+
 import client.Client;
 
 /**
@@ -15,10 +17,12 @@ public class Server {
 
 	private String serverName; // TODO: USE ME!
 	private int port;
+	private Mailbox messages;
 
 	public Server(String serverName, int port) {
 		this.serverName = serverName;
 		this.port = port;
+		this.messages = new Mailbox();
 	}
 
 	public void start() {
@@ -30,7 +34,7 @@ public class Server {
 				 * creates a Client object.
 				 */
 				Socket s = ss.accept();
-				Thread t = new ServerReadSocketThread(s);
+				Thread t = new ServerReadSocketThread(s, messages);
 				t.start();
 			}
 		} catch (IOException e) {
