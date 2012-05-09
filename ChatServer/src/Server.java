@@ -39,4 +39,9 @@ public class Server {
 		}	
 	}
 	
+	public static void main(String[] args) {
+		Server s = new Server("Quakenet", 4444);
+		s.start();
+	}
+	
 }
