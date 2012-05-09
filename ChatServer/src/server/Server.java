@@ -3,9 +3,6 @@ package server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-
-import client.Client;
 
 /**
  * A Chat server. Is currently run by the main thread, and accepts connections

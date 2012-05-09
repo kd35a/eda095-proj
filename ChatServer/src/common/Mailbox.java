@@ -1,22 +1,22 @@
 package common;
 
-import java.util.LinkedList;
+import java.util.ArrayDeque;
 import java.util.Queue;
 
-public class Mailbox {
+public class Mailbox<T> {
 
-	private Queue<String> messageQueue;
+	private Queue<T> messageQueue;
 
 	public Mailbox() {
-		messageQueue = new LinkedList<String>();
+		messageQueue = new ArrayDeque<T>();
 	}
 
-	public synchronized void addMessage(String msg) {
+	public synchronized void put(T msg) {
 		messageQueue.add(msg);
 		notifyAll();
 	}
 
-	public synchronized String getMessage() {
+	public synchronized T get() {
 		while (messageQueue.isEmpty()) {
 			try {
 				wait();
