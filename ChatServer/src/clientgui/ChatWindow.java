@@ -14,7 +14,7 @@ import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
 import message.ChatroomMessage;
@@ -27,11 +27,9 @@ public class ChatWindow extends JFrame {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private int activeRoomIndex;
-	
-	private List<String> activeRooms;
 	private Mailbox<Message> inbox;
 	private Mailbox<Message> outbox;
+	private List<Chatroom> chatrooms;
 	private Client client;
 	
 	/*
@@ -40,15 +38,15 @@ public class ChatWindow extends JFrame {
 	private JPanel mainPanel;
 	private JList chatRoomList;
 	private JScrollPane scrollPane;
-	private JTextArea chatMessages;
+	private JTabbedPane tabbedPane;
 	private JTextField messageInputField;
 	private JButton sendButton;
 	private JPanel southPanel;
 	
 	public ChatWindow(String host, int port) {
-		activeRooms = new ArrayList<String>();
 		inbox = new Mailbox<Message>();
 		outbox = new Mailbox<Message>();
+		chatrooms = new ArrayList<Chatroom>();
 		
 		try {
 			client = new Client(host, port, inbox, outbox);
@@ -57,6 +55,9 @@ public class ChatWindow extends JFrame {
 		}
 		
 		initGUI();
+		
+		joinChatroom("Room 1");
+		joinChatroom("Room 2");
 	}
 
 	private void initGUI() {
@@ -83,9 +84,8 @@ public class ChatWindow extends JFrame {
 		scrollPane = new JScrollPane(chatRoomList);
 		mainPanel.add(scrollPane, BorderLayout.WEST);
 
-		chatMessages = new JTextArea();
-		chatMessages.setText("Looolllkjn<aefsjölnasföljnwew\n");
-		mainPanel.add(chatMessages, BorderLayout.CENTER);
+		tabbedPane = new JTabbedPane();
+		mainPanel.add(tabbedPane, BorderLayout.CENTER);
 
 		southPanel = new JPanel(new BorderLayout(2, 2));
 		
@@ -103,13 +103,21 @@ public class ChatWindow extends JFrame {
 
 		setVisible(true);
 	}
+	
+	private void joinChatroom(String name) {
+		Chatroom c = new Chatroom();
+		chatrooms.add(c);
+		tabbedPane.addTab(name, c);
+	}
 
 	private class SendMessageListener implements ActionListener {
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			String msg = messageInputField.getText();
-			String room = activeRooms.get(activeRoomIndex); 
+			
+			int index = tabbedPane.getSelectedIndex();
+			String room = tabbedPane.getTitleAt(index); 
 			
 			ChatroomMessage m = new ChatroomMessage();
 			m.setMsg(msg);
