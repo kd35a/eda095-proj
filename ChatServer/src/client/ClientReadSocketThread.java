@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 
 import message.Message;
-import message.MessageFactory;
 
 import common.Mailbox;
 
@@ -36,7 +35,7 @@ public class ClientReadSocketThread extends Thread {
 		while (active) {
 			try {
 				String line = in.readLine();
-				Message m = MessageFactory.create(line);
+				Message m = Message.fromJSON(line);
 				out.put(m);
 			} catch (IOException e) {
 				System.out.println("Failed getting input from server "

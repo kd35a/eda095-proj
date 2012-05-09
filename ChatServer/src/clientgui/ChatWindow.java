@@ -16,7 +16,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import message.Message;
-import message.MessageFactory;
 import client.Client;
 
 import common.Mailbox;
@@ -102,7 +101,7 @@ public class ChatWindow extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			String s = messageInputField.getText();
-			Message m = MessageFactory.create(s);
+			Message m = Message.fromJSON(s);
 			outbox.put(m);
 		}
 		
