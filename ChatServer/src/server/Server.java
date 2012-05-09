@@ -39,7 +39,7 @@ public class Server {
 	}
 
 	public static void main(String[] args) {
-		Server s = new Server("Quakenet", 4444);
+		Server s = new Server("Quakenet", 1234);
 		s.start();
 	}
 
