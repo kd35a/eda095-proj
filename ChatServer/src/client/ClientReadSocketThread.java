@@ -5,25 +5,24 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
-/**
- * This thread handles the ingoing communication with the client. What we
- * probably want this class to do:
- * 
- * 1. Read message from the BufferedReader. 2. Store message in some global
- * storage. 3. Let producer thread pick up the message and send it to the
- * concerned parties.
- */
+import message.Message;
+
+import common.Mailbox;
+
 public class ClientReadSocketThread extends Thread {
 
+	private boolean active;
 	private Socket socket;
-	private boolean active; // TODO: USE ME!
 	private BufferedReader in;
+	private Mailbox<Message> out;
 
-	public ClientReadSocketThread(Socket s) {
-		socket = s;
+	public ClientReadSocketThread(Socket s, Mailbox<Message> box) {
 		active = true;
+		socket = s;
+		out = box;
 		try {
-			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			in = new BufferedReader(new InputStreamReader(socket
+					.getInputStream()));
 		} catch (IOException e) {
 			System.err.println("Failed setting up input stream for server "
 					+ socket.getInetAddress());
@@ -35,7 +34,9 @@ public class ClientReadSocketThread extends Thread {
 	public void run() {
 		while (active) {
 			try {
-				System.out.println(in.readLine());
+				String line = in.readLine();
+				Message m = new Message(line);
+				out.put(m);
 			} catch (IOException e) {
 				System.out.println("Failed getting input from server "
 						+ socket.getInetAddress());
