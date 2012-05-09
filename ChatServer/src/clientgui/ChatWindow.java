@@ -26,6 +26,7 @@ public class ChatWindow extends JFrame {
 	
 	private Mailbox<Message> inbox;
 	private Mailbox<Message> outbox;
+	private Client client;
 	
 	/*
 	 * GUI components
@@ -41,19 +42,25 @@ public class ChatWindow extends JFrame {
 	public ChatWindow() {
 		inbox = new Mailbox<Message>();
 		outbox = new Mailbox<Message>();
-
-		initGUI();
-
+		
 		try {
-			new Client("localhost", 1234, inbox, outbox);
+			client = new Client("localhost", 1234, inbox, outbox);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		initGUI();
 	}
 
 	private void initGUI() {
-		setTitle("ChatServer: <server-name>"); // TODO Get the servers name
+		String title;
+		if (client == null) {
+			title = "Not connected.";
+		} else {
+			title = client.getServerName();
+		}
+		setTitle("ChatServer: " + title);
+		setSize(800, 600);
 
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		addWindowListener(new MyWindow());
@@ -72,7 +79,6 @@ public class ChatWindow extends JFrame {
 		chatMessages = new JTextArea();
 		chatMessages.setText("Looolllkjn<aefsjölnasföljnwew\n");
 		mainPanel.add(chatMessages, BorderLayout.CENTER);
-		pack();
 
 		southPanel = new JPanel(new BorderLayout(2, 2));
 		
