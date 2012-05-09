@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 
 import message.Message;
+import message.MessageFactory;
 
 import common.Mailbox;
 
@@ -35,7 +36,7 @@ public class ClientReadSocketThread extends Thread {
 		while (active) {
 			try {
 				String line = in.readLine();
-				Message m = new Message(line);
+				Message m = MessageFactory.create(line);
 				out.put(m);
 			} catch (IOException e) {
 				System.out.println("Failed getting input from server "

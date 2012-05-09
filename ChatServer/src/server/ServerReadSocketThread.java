@@ -5,15 +5,19 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import common.Mailbox;
+
 public class ServerReadSocketThread extends Thread {
 
 	private Socket socket;
 	private boolean active; // TODO: USE ME!
 	private BufferedReader in;
+	private Mailbox messages; // Mailbox shared by all client communication threads
 
-	public ServerReadSocketThread(Socket s) {
-		socket = s;
-		active = true;
+	public ServerReadSocketThread(Socket s, Mailbox messages) {
+		this.socket = s;
+		this.messages = messages;
+		this.active = true;
 		try {
 			in = new BufferedReader(new InputStreamReader(socket
 					.getInputStream()));
@@ -28,7 +32,8 @@ public class ServerReadSocketThread extends Thread {
 	public void run() {
 		while (active) {
 			try {
-				System.out.println(in.readLine());
+				//Puts a message in the shared mailbox
+				messages.put(in.readLine());				
 			} catch (IOException e) {
 				System.out.println("Failed getting input from client "
 						+ socket.getInetAddress());

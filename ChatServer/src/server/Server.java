@@ -3,7 +3,7 @@ package server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-
+import common.Mailbox;
 /**
  * A Chat server. Is currently run by the main thread, and accepts connections
  * from multiple clients.
@@ -12,10 +12,12 @@ public class Server {
 
 	private String serverName; // TODO: USE ME!
 	private int port;
+	private Mailbox messages;
 
 	public Server(String serverName, int port) {
 		this.serverName = serverName;
 		this.port = port;
+		this.messages = new Mailbox();
 	}
 
 	public void start() {
@@ -27,7 +29,7 @@ public class Server {
 				 * creates a Client object.
 				 */
 				Socket s = ss.accept();
-				Thread t = new ServerReadSocketThread(s);
+				Thread t = new ServerReadSocketThread(s, messages);
 				t.start();
 			}
 		} catch (IOException e) {
