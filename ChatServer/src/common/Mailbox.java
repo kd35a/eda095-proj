@@ -1,20 +1,21 @@
+package common;
+
 import java.util.LinkedList;
 import java.util.Queue;
 
-
 public class Mailbox {
-	
+
 	private Queue<String> messageQueue;
-	
+
 	public Mailbox() {
 		messageQueue = new LinkedList<String>();
 	}
-	
+
 	public synchronized void addMessage(String msg) {
 		messageQueue.add(msg);
 		notifyAll();
 	}
-	
+
 	public synchronized String getMessage() {
 		while (messageQueue.isEmpty()) {
 			try {
