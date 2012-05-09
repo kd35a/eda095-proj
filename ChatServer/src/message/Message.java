@@ -1,11 +1,11 @@
 package message;
 
-import java.util.HashMap;
+import java.util.Map;
 
 public abstract class Message {
 	
 	protected String type;
-	protected HashMap<String, String> values;
+	protected Map<String, String> values;
 	
 	public String toJSON() {
 		/* TODO: Use JSON lib and do toString */
@@ -20,7 +20,7 @@ public abstract class Message {
 		return values.get("time");
 	}
 	
-	public void setValues(HashMap<String, String> values) {
+	public void setValues(Map<String, String> values) {
 		this.values = values;
 	}
 
