@@ -3,7 +3,9 @@ package message;
 public class ChatroomMessage extends Message {
 	
 	public ChatroomMessage() {
-		super.type = "cm";
+		super();
+		
+		type = "cm";
 	}
 	
 	public void setRoom(String s) {

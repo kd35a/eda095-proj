@@ -1,5 +1,6 @@
 package message;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
@@ -10,6 +11,10 @@ public abstract class Message {
 	
 	protected String type;
 	protected Map<String, String> values;
+	
+	public Message() {
+		values = new HashMap<String, String>();
+	}
 	
 	public String toJSON() {
 		JSONObject msg = new JSONObject();
