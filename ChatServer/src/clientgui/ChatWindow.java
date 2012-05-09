@@ -16,6 +16,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import message.Message;
+import message.MessageFactory;
 import client.Client;
 
 import common.Mailbox;
@@ -23,10 +24,12 @@ import common.Mailbox;
 public class ChatWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-
+	
 	private Mailbox<Message> inbox;
 	private Mailbox<Message> outbox;
 
+	private JTextField textField;
+	
 	public ChatWindow() {
 		inbox = new Mailbox<Message>();
 		outbox = new Mailbox<Message>();
@@ -65,7 +68,7 @@ public class ChatWindow extends JFrame {
 
 		JPanel southPanel = new JPanel(new BorderLayout(2, 2));
 
-		JTextField textField = new JTextField();
+		textField = new JTextField();
 		southPanel.add(textField, BorderLayout.CENTER);
 
 		JButton button = new JButton("Send message");
@@ -84,7 +87,9 @@ public class ChatWindow extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-
+			String s = textField.getText();
+			Message m = MessageFactory.create(s);
+			outbox.put(m);
 		}
 
 	}
