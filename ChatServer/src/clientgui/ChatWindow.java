@@ -64,7 +64,7 @@ public class ChatWindow extends JFrame implements ClientGUI {
 		setSize(800, 600);
 
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		addWindowListener(new MyWindow());
+		addWindowListener(new ChatWindowCloseListener());
 
 		mainPanel = new JPanel();
 		getContentPane().add(mainPanel);
@@ -137,7 +137,7 @@ public class ChatWindow extends JFrame implements ClientGUI {
 		
 	}
 
-	private class MyWindow extends WindowAdapter {
+	private class ChatWindowCloseListener extends WindowAdapter {
 		
 		public void windowClosing(WindowEvent e) {
 			System.out.println("Exit-button pressed");
