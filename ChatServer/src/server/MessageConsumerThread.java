@@ -40,17 +40,17 @@ public class MessageConsumerThread extends Thread {
 			String type = msg.getType();
 			if (type.equals("pm"))
 				consume((PrivateMessage) msg);
-			else if (type.equals("cm"))
+			else if (type.equals(ChatroomMessage.TYPE))
 				consume((ChatroomMessage) msg);
-			else if (type.equals("join"))
+			else if (type.equals(JoinMessage.TYPE))
 				consume((JoinMessage) msg);
-			else if (type.equals("part"))
+			else if (type.equals(PartMessage.TYPE))
 				consume((PartMessage) msg);
-			else if (type.equals("connect"))
+			else if (type.equals(ConnectMessage.TYPE))
 				consume((ConnectMessage) msg);
-			else if (type.equals("disconnect"))
+			else if (type.equals(DisconnectMessage.TYPE))
 				consume((DisconnectMessage) msg);
-			else if (type.equals("nick"))
+			else if (type.equals(NickMessage.TYPE))
 				consume((NickMessage) msg);
 			else
 				System.err.println("Unknown message. Doing nothing.");
