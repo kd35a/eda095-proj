@@ -3,9 +3,7 @@ package message;
 public class ChatroomMessage extends Message {
 	
 	public ChatroomMessage() {
-		super();
-		
-		type = "cm";
+		super.type = "cm";
 	}
 	
 	public void setRoom(String s) {
@@ -22,14 +20,6 @@ public class ChatroomMessage extends Message {
 	
 	public String getMsg() {
 		return values.get("msg");
-	}
-	
-	public void setSender(String s) {
-		values.put("sender", s);
-	}
-	
-	public String getSender() {
-		return values.get("sender");
 	}
 
 }
