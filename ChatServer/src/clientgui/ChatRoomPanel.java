@@ -9,7 +9,6 @@ import javax.swing.JTextArea;
 import message.ChatroomMessage;
 
 public class ChatRoomPanel extends JPanel {
-	
 	private static final long serialVersionUID = 1L;
 	
 	private JTextArea text;
@@ -33,5 +32,5 @@ public class ChatRoomPanel extends JPanel {
 	public void putMessage(ChatroomMessage m) {
 		text.append(m.getFrom() + ": " + m.getMsg() + "\n");
 	}
-
+	
 }

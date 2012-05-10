@@ -3,11 +3,9 @@ package server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import message.Message;
-import message.WelcomeMessage;
 
 import common.Mailbox;
 /**
@@ -15,7 +13,6 @@ import common.Mailbox;
  * from multiple clients.
  */
 public class Server {
-
 	private String serverName; // TODO: USE ME!
 	private int port;
 	private Mailbox<Message> messages;
