@@ -69,6 +69,8 @@ public abstract class Message {
 				msg = new NickMessage();
 			else if (type.equals("welcome"))
 				msg = new WelcomeMessage();
+			else if (type.equals("list"))
+				msg = new ListParticipantsMessage();
 			else
 				throw new ParseException(ParseException.ERROR_UNEXPECTED_TOKEN);
 			

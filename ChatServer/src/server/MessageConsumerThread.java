@@ -9,6 +9,7 @@ import message.ConnectMessage;
 import message.DisconnectMessage;
 import message.ErrorMessage;
 import message.JoinMessage;
+import message.ListParticipantsMessage;
 import message.Message;
 import message.NickMessage;
 import message.PartMessage;
@@ -83,15 +84,32 @@ public class MessageConsumerThread extends Thread {
 	}
 	
 	private void consume(JoinMessage m) {
+		// Get or create chat room
 		String room = m.getRoom();
 		List<ClientConnection> chatRoom = roomList.get(room);
 		if (chatRoom == null) {
 			chatRoom = new ArrayList<ClientConnection>();
 			roomList.put(room, chatRoom);
 		}
+		
+		// Broadcast join
+		for (ClientConnection client : chatRoom) {
+			client.sendMsg(m);
+		}
+
+		// Add client to room
 		ClientConnection cc = clientList.get(m.getFrom());
 		chatRoom.add(cc);
-		// TODO: send ListParticipantsMessage
+		
+		// Gather list of participants
+		List<String> participants = new ArrayList<String>();
+		for (ClientConnection client : chatRoom) {
+			String nick = client.getNick();
+			participants.add(nick);
+		}
+		ListParticipantsMessage msg = new ListParticipantsMessage();
+		msg.setParticipants(participants);
+		cc.sendMsg(msg);
 	}
 	
 	private void consume(PartMessage m) {
