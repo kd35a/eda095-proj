@@ -9,6 +9,7 @@ import message.ChatroomMessage;
 import message.ConnectMessage;
 import message.DisconnectMessage;
 import message.JoinMessage;
+import message.ListParticipantsMessage;
 import message.Message;
 import message.NickMessage;
 import message.PartMessage;
@@ -45,6 +46,12 @@ public class ClientReadSocketThread extends Thread {
 		while (active) {
 			try {
 				String line = in.readLine();
+				if (line == null) {
+					// TODO: handle server shut down
+					socket.close();
+					active = false;
+					break;
+				}		
 				Message msg = Message.fromJSON(line);
 				System.out.println("received " + msg.toJSON());
 				String type = msg.getType();
@@ -109,6 +116,11 @@ public class ClientReadSocketThread extends Thread {
 	}
 
 	private void consume(ChatroomMessage msg) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	private void consume(ListParticipantsMessage msg) {
 		// TODO Auto-generated method stub
 		
 	}
