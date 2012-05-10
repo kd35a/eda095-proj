@@ -75,6 +75,7 @@ public abstract class Message {
 			
 			JSONObject attr = (JSONObject) msgObj.get(type);
 			msg.setValues((Map<String, String>) attr);
+			
 			return msg;
 		} catch (ParseException e) {
 			e.printStackTrace();

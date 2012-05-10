@@ -25,7 +25,7 @@ public class Chatroom extends JPanel {
 	}
 	
 	public void addMessage(ChatroomMessage m) {
-		text.append(m.getSender() + ": " + m.getMsg() + "\n");
+		text.append(m.getFrom() + ": " + m.getMsg() + "\n");
 	}
 
 }

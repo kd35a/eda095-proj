@@ -3,7 +3,7 @@ package message;
 public class PartMessage extends Message {
 	
 	public PartMessage() {
-		super.type = "join";
+		super.type = "part";
 	}
 	
 	public void setRoom(String s) {

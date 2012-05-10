@@ -1,6 +1,8 @@
 package server;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.json.simple.parser.ParseException;
@@ -13,12 +15,14 @@ public class MessageConsumerThread extends Thread {
 	private Mailbox<Message> messages;
 	private boolean active;
 	private ConcurrentHashMap<String, ClientConnection> clientList;
+	private ConcurrentHashMap<String, List<ClientConnection>> roomList;
 	
 	public MessageConsumerThread(ConcurrentHashMap<String, ClientConnection> clientList, 
 			Mailbox<Message> messages) {
 		this.clientList = clientList;
 		this.messages = messages;
 		this.active = true;
+		this.roomList = new ConcurrentHashMap<String, List<ClientConnection>>();
 	}
 	
 	public void run() {
@@ -63,7 +67,15 @@ public class MessageConsumerThread extends Thread {
 	}
 	
 	private void consume(JoinMessage m) {
-		/* TODO: Implement me! */
+		String room = m.getRoom();
+		List<ClientConnection> chatroom = roomList.get(room);
+		if (chatroom == null) {
+			chatroom = new ArrayList<ClientConnection>();
+			roomList.put(room, chatroom);
+		}
+		ClientConnection cc = clientList.get(m.getFrom());
+		chatroom.add(cc);
+		// TODO: send ListParticipantsMessage
 	}
 	
 	private void consume(PartMessage m) {

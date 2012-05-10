@@ -140,7 +140,6 @@ public class ChatWindow extends JFrame {
 			ChatroomMessage m = new ChatroomMessage();
 			m.setMsg(msg);
 			m.setRoom(room);
-			m.setSender("Ola-Conny");
 			
 			chatrooms.get(index).addMessage(m);
 			
