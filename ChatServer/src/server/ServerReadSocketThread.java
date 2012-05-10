@@ -46,7 +46,10 @@ public class ServerReadSocketThread extends Thread {
 				//Puts a message in the shared mailbox
 				String input = in.readLine();
 				if (input == null) {
-					// TODO: handle client shut down
+					// TODO: handle client shut down (remove from client from lists)
+					socket.close();
+					active = false;
+					break;
 				}
 				Date d = new Date(System.currentTimeMillis());
 				String timestamp = df.format(d);

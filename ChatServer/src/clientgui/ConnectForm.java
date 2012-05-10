@@ -10,6 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
+import message.ConnectMessage;
 import message.NickMessage;
 
 public class ConnectForm extends JFrame implements Runnable {
@@ -29,7 +30,7 @@ public class ConnectForm extends JFrame implements Runnable {
 		JLabel portLabel = new JLabel("Port:");
 		JLabel nickLabel = new JLabel("Nickname:");
 		
-		hostField = new JTextField("", 15);
+		hostField = new JTextField("localhost", 15);
 		portField = new JTextField("1234", 15);
 		nickField = new JTextField("", 15);
 		
@@ -102,6 +103,9 @@ public class ConnectForm extends JFrame implements Runnable {
 					throw new NumberFormatException();
 				
 				ChatWindow cw = new ChatWindow(host, port);
+				
+				ConnectMessage cm = new ConnectMessage();
+				cw.sendMessage(cm);
 				
 				if (!nick.equals("")) {
 					NickMessage nm = new NickMessage();

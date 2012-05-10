@@ -29,7 +29,7 @@ public class Server {
 		
 		/* Sets up the consumer thread, which will poll messages
 		 * from the mailbox which all clients send to. */
-		MessageConsumerThread consumer = new MessageConsumerThread(clientList, messages);
+		MessageConsumerThread consumer = new MessageConsumerThread(serverName, clientList, messages);
 		consumer.start();
 	}
 
@@ -53,10 +53,6 @@ public class Server {
 				read.start();
 				Thread write = new ServerWriteSocketThread(s, outgoing);
 				write.start();
-				// Send welome message
-				WelcomeMessage m = new WelcomeMessage();
-				m.setName(serverName);
-				cc.sendMsg(m);
 			}
 		} catch (IOException e) {
 			System.err.println("Failed setting up server socket.");

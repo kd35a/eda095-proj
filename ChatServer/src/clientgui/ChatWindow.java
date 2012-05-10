@@ -32,7 +32,7 @@ public class ChatWindow extends JFrame {
 	
 	private Mailbox<Message> inbox;
 	private Mailbox<Message> outbox;
-	private List<Chatroom> chatrooms;
+	private List<ChatRoom> chatrooms;
 	private Client client;
 	
 	/*
@@ -50,7 +50,7 @@ public class ChatWindow extends JFrame {
 	public ChatWindow(String host, int port) {
 		inbox = new Mailbox<Message>();
 		outbox = new Mailbox<Message>();
-		chatrooms = new ArrayList<Chatroom>();
+		chatrooms = new ArrayList<ChatRoom>();
 		
 		try {
 			client = new Client(host, port, inbox, outbox);
@@ -111,7 +111,7 @@ public class ChatWindow extends JFrame {
 	}
 	
 	private void joinChatroom(String name) {
-		Chatroom c = new Chatroom();
+		ChatRoom c = new ChatRoom();
 		chatrooms.add(c);
 		tabbedPane.addTab(name, c);
 	}
@@ -155,16 +155,6 @@ public class ChatWindow extends JFrame {
 			// TODO Close connection to server here
 		}
 		
-	}
-
-	public static void main(String[] args) {
-		if (args.length < 2) {
-			System.out.println("Usage: java ChatWindow <host> <port>");
-		} else {			
-			String host = args[0];
-			int port = Integer.parseInt(args[1]);
-			new ChatWindow(host, port);
-		}
 	}
 	
 	protected void sendMessage(Message msg) {

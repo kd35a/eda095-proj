@@ -35,8 +35,9 @@ public class ClientReadSocketThread extends Thread {
 		while (active) {
 			try {
 				String line = in.readLine();
-				Message m = Message.fromJSON(line);
-				out.put(m);
+				Message msg = Message.fromJSON(line);
+				System.out.println("received " + msg.toJSON());
+				out.put(msg);
 			} catch (IOException e) {
 				System.out.println("Failed getting input from server "
 						+ socket.getInetAddress());

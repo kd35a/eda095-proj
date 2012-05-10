@@ -32,8 +32,8 @@ public class ClientWriteSocketThread extends Thread {
 
 	public void run() {
 		while (active) {
-			Message m = in.get();
-			out.println(m.toJSON());
+			Message msg = in.get();
+			out.println(msg.toJSON());
 		}
 	}
 

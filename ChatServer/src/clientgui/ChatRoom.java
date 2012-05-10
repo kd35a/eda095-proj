@@ -8,11 +8,11 @@ import javax.swing.JTextArea;
 
 import message.ChatroomMessage;
 
-public class Chatroom extends JPanel {
+public class ChatRoom extends JPanel {
 	
 	private JTextArea text;
 	
-	public Chatroom() {
+	public ChatRoom() {
 		super();
 		
 		initGUI();

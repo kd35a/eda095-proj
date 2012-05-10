@@ -1,24 +1,33 @@
 package server;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.json.simple.parser.ParseException;
+import message.ChatroomMessage;
+import message.ConnectMessage;
+import message.DisconnectMessage;
+import message.ErrorMessage;
+import message.JoinMessage;
+import message.Message;
+import message.NickMessage;
+import message.PartMessage;
+import message.PrivateMessage;
+import message.WelcomeMessage;
 
-import message.*;
 import common.Mailbox;
 
 public class MessageConsumerThread extends Thread {
 	
+	private String serverName;
 	private Mailbox<Message> messages;
 	private boolean active;
 	private ConcurrentHashMap<String, ClientConnection> clientList;
 	private ConcurrentHashMap<String, List<ClientConnection>> roomList;
 	
-	public MessageConsumerThread(ConcurrentHashMap<String, ClientConnection> clientList, 
+	public MessageConsumerThread(String serverName, ConcurrentHashMap<String, ClientConnection> clientList, 
 			Mailbox<Message> messages) {
+		this.serverName = serverName;
 		this.clientList = clientList;
 		this.messages = messages;
 		this.active = true;
@@ -63,18 +72,25 @@ public class MessageConsumerThread extends Thread {
 	}
 	
 	private void consume(ChatroomMessage m) {
-		/* TODO: Implement me! */
+		String room = m.getRoom();
+		List<ClientConnection> chatRoom = roomList.get(room);
+		if (chatRoom == null) {
+			// TODO: handle error, room does not exist
+		}
+		for (ClientConnection cc : chatRoom) {
+			cc.sendMsg(m);
+		}
 	}
 	
 	private void consume(JoinMessage m) {
 		String room = m.getRoom();
-		List<ClientConnection> chatroom = roomList.get(room);
-		if (chatroom == null) {
-			chatroom = new ArrayList<ClientConnection>();
-			roomList.put(room, chatroom);
+		List<ClientConnection> chatRoom = roomList.get(room);
+		if (chatRoom == null) {
+			chatRoom = new ArrayList<ClientConnection>();
+			roomList.put(room, chatRoom);
 		}
 		ClientConnection cc = clientList.get(m.getFrom());
-		chatroom.add(cc);
+		chatRoom.add(cc);
 		// TODO: send ListParticipantsMessage
 	}
 	
@@ -83,7 +99,10 @@ public class MessageConsumerThread extends Thread {
 	}
 	
 	private void consume(ConnectMessage m) {
-		/* TODO: Implement me! */
+		ClientConnection cc = clientList.get(m.getFrom());
+		WelcomeMessage wm = new WelcomeMessage();
+		wm.setName(serverName);
+		cc.sendMsg(wm);
 	}
 	
 	private void consume(DisconnectMessage m) {
