@@ -1,9 +1,10 @@
 package message;
 
 public class WelcomeMessage extends Message {
+	public static final String TYPE = "welcome";
 	
 	public WelcomeMessage() {
-		super.type = "welcome";
+		super.type = TYPE;
 	}
 	
 	public void setName(String s) {

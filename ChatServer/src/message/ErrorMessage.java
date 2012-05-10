@@ -1,9 +1,10 @@
 package message;
 
 public class ErrorMessage extends Message {
+	public static final String TYPE = "error";
 	
 	public ErrorMessage() {
-		super.type = "error";
+		super.type = TYPE;
 	}
 	
 	public void setMsg(String s) {

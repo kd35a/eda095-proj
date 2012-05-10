@@ -1,9 +1,10 @@
 package message;
 
 public class ChatroomMessage extends Message {
+	public static final String TYPE = "cm";
 	
 	public ChatroomMessage() {
-		super.type = "cm";
+		super.type = TYPE;
 	}
 	
 	public void setRoom(String s) {

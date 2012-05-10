@@ -1,9 +1,10 @@
 package message;
 
 public class JoinMessage extends Message {
+	public static final String TYPE = "join";
 	
 	public JoinMessage() {
-		super.type = "join";
+		super.type = TYPE;
 	}
 	
 	public void setRoom(String s) {

@@ -1,9 +1,10 @@
 package message;
 
 public class NickMessage extends Message {
+	public static final String TYPE = "nick";
 	
 	public NickMessage() {
-		super.type = "nick";
+		super.type = TYPE;
 	}
 	
 	public void setNick(String s) {

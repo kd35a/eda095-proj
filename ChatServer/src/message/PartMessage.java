@@ -1,9 +1,10 @@
 package message;
 
 public class PartMessage extends Message {
+	public static final String TYPE = "part";
 	
 	public PartMessage() {
-		super.type = "part";
+		super.type = TYPE;
 	}
 	
 	public void setRoom(String s) {

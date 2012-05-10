@@ -1,10 +1,11 @@
 package message;
 
 public class PrivateMessage extends Message {
+	public static final String TYPE = "pm";
 	
 	
 	public PrivateMessage () {
-		super.type = "pm";
+		super.type = TYPE;
 	}
 	
 	public void setTo(String s) {
