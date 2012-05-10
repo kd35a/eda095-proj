@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="eda095-proj" default="default">
+	<property name="src.dir"			value="src" />
+	<property name="build.dir"			value="build" />
+	<property name="classes.dir"		value="${build.dir}/classes"/>
+	<property name="jar.dir"			value="${build.dir}/jar"/>
+	<property name="libs.dir"			value="libs"/>
+	<property name="server.main.class"	value="server.Server"/>
+	<property name="client.main.class"	value="clientgui.ConnectForm"/>
+	
+	<target name="clean">
+		<delete dir="${build.dir}" />
+	</target>
+	
+	<target name="default" depends="dist" />
+	
+	<target name="dist" depends="jar-client,jar-server" />
+	
+	<path id="libs">
+		<fileset dir="${libs.dir}">
+			<include name="*.jar"/>
+		</fileset>
+	</path>
+	
+	<target name="compile">
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${classes.dir}" />
+		<javac srcdir="${src.dir}" destdir="${classes.dir}">
+			<compilerarg value="-Xlint:unchecked"/>
+			<classpath refid="libs" />
+		</javac>
+	</target>
+	
+	<target name="jar-server" depends="compile">
+		<mkdir dir="${jar.dir}" />
+		<jar destfile="${jar.dir}/${ant.project.name}-server.jar" basedir="${classes.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="${server.main.class}" />
+			</manifest>
+		</jar>
+	</target>
+	
+	<target name="jar-client" depends="compile">
+		<mkdir dir="${jar.dir}" />
+		<jar destfile="${jar.dir}/${ant.project.name}-client.jar" basedir="${classes.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="${client.main.class}" />
+			</manifest>
+		</jar>
+	</target>
+	
+	<target name="run-server" depends="jar-server">
+		<java jar="${jar.dir}/${ant.project.name}-server.jar" fork="true"/>
+	</target>
+	
+	<target name="run-client" depends="jar-client">
+		<java jar="${jar.dir}/${ant.project.name}-client.jar" fork="true"/>
+	</target>
+	
+</project>
