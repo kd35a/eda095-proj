@@ -24,7 +24,7 @@ public class Client {
 		outbox = new Mailbox<Message>();
 		
 		Thread t;
-		t = new ClientReadSocketThread(socket, inbox);
+		t = new ClientReadSocketThread(this, socket, inbox);
 		t.start();
 		t = new ClientWriteSocketThread(socket, outbox);
 		t.start();
@@ -36,6 +36,14 @@ public class Client {
 	
 	public void sendMessage(Message msg) {
 		outbox.put(msg);
+	}
+
+	public void setNick(String nick) {
+		this.nickname = nick;
+	}
+	
+	public String getNick(String nick) {
+		return this.nickname;
 	}
 
 }

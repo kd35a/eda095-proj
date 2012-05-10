@@ -5,7 +5,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import message.ChatroomMessage;
+import message.ConnectMessage;
+import message.DisconnectMessage;
+import message.JoinMessage;
 import message.Message;
+import message.NickMessage;
+import message.PartMessage;
+import message.PrivateMessage;
+import message.WelcomeMessage;
 
 import common.Mailbox;
 
@@ -15,8 +23,10 @@ public class ClientReadSocketThread extends Thread {
 	private Socket socket;
 	private BufferedReader in;
 	private Mailbox<Message> out;
+	private Client client;
 
-	public ClientReadSocketThread(Socket s, Mailbox<Message> box) {
+	public ClientReadSocketThread(Client client, Socket s, Mailbox<Message> box) {
+		this.client = client;
 		active = true;
 		socket = s;
 		out = box;
@@ -37,13 +47,70 @@ public class ClientReadSocketThread extends Thread {
 				String line = in.readLine();
 				Message msg = Message.fromJSON(line);
 				System.out.println("received " + msg.toJSON());
-				out.put(msg);
+				String type = msg.getType();
+				if (type.equals("pm"))
+					consume((PrivateMessage) msg);
+				else if (type.equals(ChatroomMessage.TYPE))
+					consume((ChatroomMessage) msg);
+				else if (type.equals(JoinMessage.TYPE))
+					consume((JoinMessage) msg);
+				else if (type.equals(PartMessage.TYPE))
+					consume((PartMessage) msg);
+				else if (type.equals(ConnectMessage.TYPE))
+					consume((ConnectMessage) msg);
+				else if (type.equals(DisconnectMessage.TYPE))
+					consume((DisconnectMessage) msg);
+				else if (type.equals(NickMessage.TYPE))
+					consume((NickMessage) msg);
+				else if (type.equals(WelcomeMessage.TYPE))
+					consume((WelcomeMessage) msg);
+				else
+					System.err.println("Unknown message. Doing nothing.");
 			} catch (IOException e) {
 				System.out.println("Failed getting input from server "
 						+ socket.getInetAddress());
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private void consume(WelcomeMessage msg) {
+		client.setNick(msg.getNick());
+	}
+
+	private void consume(NickMessage msg) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void consume(DisconnectMessage msg) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void consume(ConnectMessage msg) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void consume(PartMessage msg) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void consume(JoinMessage msg) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void consume(PrivateMessage msg) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void consume(ChatroomMessage msg) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

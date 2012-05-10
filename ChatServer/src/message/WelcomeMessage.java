@@ -19,4 +19,8 @@ public class WelcomeMessage extends Message {
 		return (String) values.get("name");
 	}
 
+	public String getNick() {
+		return (String) values.get("nick");
+	}
+
 }
