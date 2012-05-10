@@ -19,8 +19,8 @@ public class Chatroom extends JPanel {
 	
 	private void initGUI() {
 		setLayout(new BorderLayout());
-		
 		text = new JTextArea();
+		text.setEditable(false);
 		add(text, BorderLayout.CENTER);
 	}
 	
