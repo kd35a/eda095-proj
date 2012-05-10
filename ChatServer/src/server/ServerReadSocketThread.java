@@ -40,6 +40,9 @@ public class ServerReadSocketThread extends Thread {
 			try {
 				//Puts a message in the shared mailbox
 				String input = in.readLine();
+				if (input == null) {
+					// TODO: handle client shut down
+				}
 				Message msg = Message.fromJSON(input);
 				msg.setFrom(cc.getNick());
 				System.out.println("received " + msg.toJSON());
