@@ -12,7 +12,7 @@ public class PartMessage extends Message {
 	}
 	
 	public String getRoom() {
-		return values.get("room");
+		return (String) values.get("room");
 	}
 
 }

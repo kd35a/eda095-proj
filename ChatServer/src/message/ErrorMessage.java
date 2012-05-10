@@ -12,7 +12,7 @@ public class ErrorMessage extends Message {
 	}
 	
 	public String getMsg() {
-		return values.get("msg");
+		return (String) values.get("msg");
 	}
 
 }

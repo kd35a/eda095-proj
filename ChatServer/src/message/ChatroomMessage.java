@@ -12,7 +12,7 @@ public class ChatroomMessage extends Message {
 	}
 	
 	public String getRoom() {
-		return values.get("room");
+		return (String) values.get("room");
 	}
 	
 	public void setMsg(String s) {
@@ -20,7 +20,7 @@ public class ChatroomMessage extends Message {
 	}
 	
 	public String getMsg() {
-		return values.get("msg");
+		return (String) values.get("msg");
 	}
 
 }

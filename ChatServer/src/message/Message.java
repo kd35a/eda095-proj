@@ -1,8 +1,5 @@
 package message;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -10,10 +7,10 @@ import org.json.simple.parser.ParseException;
 public abstract class Message {
 	
 	protected String type;
-	protected Map<String, String> values;
+	protected JSONObject values;
 	
 	public Message() {
-		values = new HashMap<String, String>();
+		values = new JSONObject();
 	}
 	
 	public String toJSON() {
@@ -33,7 +30,7 @@ public abstract class Message {
 	}
 	
 	public String getTime() {
-		return values.get("time");
+		return (String) values.get("time");
 	}
 
 	public void setFrom(String s) {
@@ -41,9 +38,9 @@ public abstract class Message {
 	}
 	
 	public String getFrom() {
-		return values.get("from");
+		return (String) values.get("from");
 	}
-	public void setValues(Map<String, String> values) {
+	public void setValues(JSONObject values) {
 		this.values = values;
 	}
 	
@@ -70,11 +67,13 @@ public abstract class Message {
 				msg = new DisconnectMessage();
 			else if (type.equals("nick"))
 				msg = new NickMessage();
+			else if (type.equals("welcome"))
+				msg = new WelcomeMessage();
 			else
 				throw new ParseException(ParseException.ERROR_UNEXPECTED_TOKEN);
 			
 			JSONObject attr = (JSONObject) msgObj.get(type);
-			msg.setValues((Map<String, String>) attr);
+			msg.setValues(attr);
 			
 			return msg;
 		} catch (ParseException e) {

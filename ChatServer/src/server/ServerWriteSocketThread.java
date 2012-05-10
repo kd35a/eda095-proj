@@ -1,5 +1,6 @@
 package server;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -20,7 +21,8 @@ public class ServerWriteSocketThread extends Thread {
 		this.outgoing = outgoing;
 		this.active = true;
 		try {
-			this.out = new PrintWriter(socket.getOutputStream());
+			this.out = new PrintWriter(new BufferedOutputStream(socket
+					.getOutputStream()), true);
 		} catch (IOException e) {
 			System.err.println("Failed setting up output stream for client "
 				+ socket.getInetAddress());

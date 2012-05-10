@@ -13,7 +13,7 @@ public class PrivateMessage extends Message {
 	}
 	
 	public String getTo() {
-		return values.get("to");
+		return (String) values.get("to");
 	}
 	
 	public void setMsg(String s) {
@@ -21,7 +21,7 @@ public class PrivateMessage extends Message {
 	}
 	
 	public String getMsg() {
-		return values.get("msg");
+		return (String) values.get("msg");
 	}
 	
 	public void setSender(String s) {
@@ -29,7 +29,7 @@ public class PrivateMessage extends Message {
 	}
 	
 	public String getSender() {
-		return values.get("sender");
+		return (String) values.get("sender");
 	}
 
 }
