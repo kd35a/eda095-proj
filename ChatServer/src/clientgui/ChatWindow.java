@@ -28,7 +28,7 @@ public class ChatWindow extends JFrame implements ClientGUI {
 	private static final long serialVersionUID = 1L;
 	private static final String PROGRAM_NAME = "ChatServer";
 	
-	private List<ChatRoom> chatrooms;
+	private List<ChatRoomPanel> chatrooms;
 	private Client client;
 	
 	/*
@@ -45,7 +45,7 @@ public class ChatWindow extends JFrame implements ClientGUI {
 	
 	public ChatWindow(Client client) {
 		this.client = client;
-		chatrooms = new ArrayList<ChatRoom>();
+		chatrooms = new ArrayList<ChatRoomPanel>();
 		
 		initGUI();
 		
@@ -100,7 +100,7 @@ public class ChatWindow extends JFrame implements ClientGUI {
 	}
 	
 	private void joinChatroom(String name) {
-		ChatRoom c = new ChatRoom();
+		ChatRoomPanel c = new ChatRoomPanel();
 		chatrooms.add(c);
 		tabbedPane.addTab(name, c);
 	}
