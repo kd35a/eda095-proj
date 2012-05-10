@@ -12,6 +12,9 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -24,7 +27,7 @@ import client.Client;
 import common.Mailbox;
 
 public class ChatWindow extends JFrame {
-	
+	private static final String PROGRAM_NAME = "ChatServer";
 	private static final long serialVersionUID = 1L;
 	
 	private Mailbox<Message> inbox;
@@ -42,6 +45,7 @@ public class ChatWindow extends JFrame {
 	private JTextField messageInputField;
 	private JButton sendButton;
 	private JPanel southPanel;
+	private JMenuBar menuBar;
 	
 	public ChatWindow(String host, int port) {
 		inbox = new Mailbox<Message>();
@@ -63,11 +67,11 @@ public class ChatWindow extends JFrame {
 	private void initGUI() {
 		String title;
 		if (client == null) {
-			title = "Not connected.";
+			title = PROGRAM_NAME + ": " + "Not connected.";
 		} else {
-			title = client.getServerName();
+			title = PROGRAM_NAME + ": " + client.getServerName();
 		}
-		setTitle("ChatServer: " + title);
+		setTitle(title);
 		setSize(800, 600);
 
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -100,6 +104,8 @@ public class ChatWindow extends JFrame {
 		ActionListener sendListener = new SendMessageListener();
 		messageInputField.addActionListener(sendListener);
 		sendButton.addActionListener(sendListener);
+		
+		initMenu();
 
 		setVisible(true);
 	}
@@ -108,6 +114,17 @@ public class ChatWindow extends JFrame {
 		Chatroom c = new Chatroom();
 		chatrooms.add(c);
 		tabbedPane.addTab(name, c);
+	}
+
+	private void initMenu() {
+		menuBar = new JMenuBar();
+		
+		JMenu serverMenu = new JMenu("Server");
+		JMenuItem serverDisconnect = new JMenuItem("Disconnect from server");
+		serverMenu.add(serverDisconnect);
+		
+		menuBar.add(serverMenu);
+		setJMenuBar(menuBar);
 	}
 
 	private class SendMessageListener implements ActionListener {
