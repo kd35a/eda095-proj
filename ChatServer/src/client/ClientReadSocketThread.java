@@ -55,7 +55,7 @@ public class ClientReadSocketThread extends Thread {
 				Message msg = Message.fromJSON(line);
 				System.out.println("received " + msg.toJSON());
 				String type = msg.getType();
-				if (type.equals("pm"))
+				if (type.equals(PrivateMessage.TYPE))
 					consume((PrivateMessage) msg);
 				else if (type.equals(ChatroomMessage.TYPE))
 					consume((ChatroomMessage) msg);
@@ -71,6 +71,8 @@ public class ClientReadSocketThread extends Thread {
 					consume((NickMessage) msg);
 				else if (type.equals(WelcomeMessage.TYPE))
 					consume((WelcomeMessage) msg);
+				else if (type.equals(ListParticipantsMessage.TYPE))
+					consume((ListParticipantsMessage) msg);
 				else
 					System.err.println("Unknown message. Doing nothing.");
 			} catch (IOException e) {

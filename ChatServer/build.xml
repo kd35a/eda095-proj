@@ -34,6 +34,7 @@
 	<target name="jar-server" depends="compile">
 		<mkdir dir="${jar.dir}" />
 		<jar destfile="${jar.dir}/${ant.project.name}-server.jar" basedir="${classes.dir}">
+			<zipgroupfileset dir="${libs.dir}" includes="*.jar" />
 			<manifest>
 				<attribute name="Main-Class" value="${server.main.class}" />
 			</manifest>
@@ -43,6 +44,7 @@
 	<target name="jar-client" depends="compile">
 		<mkdir dir="${jar.dir}" />
 		<jar destfile="${jar.dir}/${ant.project.name}-client.jar" basedir="${classes.dir}">
+			<zipgroupfileset dir="${libs.dir}" includes="*.jar" />
 			<manifest>
 				<attribute name="Main-Class" value="${client.main.class}" />
 			</manifest>

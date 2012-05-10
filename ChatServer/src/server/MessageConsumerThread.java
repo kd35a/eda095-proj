@@ -39,7 +39,7 @@ public class MessageConsumerThread extends Thread {
 		while (active) {
 			Message msg = messages.get();
 			String type = msg.getType();
-			if (type.equals("pm"))
+			if (type.equals(PrivateMessage.TYPE))
 				consume((PrivateMessage) msg);
 			else if (type.equals(ChatroomMessage.TYPE))
 				consume((ChatroomMessage) msg);
@@ -76,7 +76,7 @@ public class MessageConsumerThread extends Thread {
 		String room = m.getRoom();
 		List<ClientConnection> chatRoom = roomList.get(room);
 		if (chatRoom == null) {
-			// TODO: handle error, room does not exist
+			return; // TODO: handle error, room does not exist
 		}
 		for (ClientConnection cc : chatRoom) {
 			cc.sendMsg(m);

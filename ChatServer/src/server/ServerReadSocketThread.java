@@ -8,8 +8,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.swing.text.SimpleAttributeSet;
-
 import message.Message;
 
 import common.Mailbox;
@@ -51,8 +49,7 @@ public class ServerReadSocketThread extends Thread {
 					active = false;
 					break;
 				}
-				Date d = new Date(System.currentTimeMillis());
-				String timestamp = df.format(d);
+				String timestamp = df.format(new Date());
 				Message msg = Message.fromJSON(input);
 				msg.setTime(timestamp);
 				msg.setFrom(cc.getNick());

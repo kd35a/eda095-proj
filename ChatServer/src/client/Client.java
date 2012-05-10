@@ -42,7 +42,7 @@ public class Client {
 		this.nickname = nick;
 	}
 	
-	public String getNick(String nick) {
+	public String getNick() {
 		return this.nickname;
 	}
 
