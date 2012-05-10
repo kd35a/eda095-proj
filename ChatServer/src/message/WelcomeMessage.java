@@ -11,6 +11,10 @@ public class WelcomeMessage extends Message {
 		values.put("name", s);
 	}
 	
+	public void setNick(String s) {
+		values.put("nick", s);
+	}
+	
 	public String getName() {
 		return (String) values.get("name");
 	}

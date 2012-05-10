@@ -14,6 +14,7 @@ public class Client {
 	private Socket socket;
 	private Mailbox<Message> inbox;
 	private Mailbox<Message> outbox;
+	private String nickname;
 
 	public Client(String host, int port) throws IOException {
 		serverName = host;

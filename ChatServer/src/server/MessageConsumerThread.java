@@ -102,6 +102,7 @@ public class MessageConsumerThread extends Thread {
 		ClientConnection cc = clientList.get(m.getFrom());
 		WelcomeMessage wm = new WelcomeMessage();
 		wm.setName(serverName);
+		wm.setNick(cc.getNick());
 		cc.sendMsg(wm);
 	}
 	
