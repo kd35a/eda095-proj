@@ -166,5 +166,9 @@ public class ChatWindow extends JFrame {
 			new ChatWindow(host, port);
 		}
 	}
+	
+	protected void sendMessage(Message msg) {
+		outbox.put(msg);
+	}
 
 }
