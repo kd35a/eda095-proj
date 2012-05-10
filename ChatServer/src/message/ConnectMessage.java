@@ -11,7 +11,7 @@ public class ConnectMessage extends Message {
 	}
 	
 	public String getNick() {
-		return values.get("nick");
+		return (String) values.get("nick");
 	}
 
 }
