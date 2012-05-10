@@ -3,10 +3,11 @@ package server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import message.Message;
+import message.WelcomeMessage;
+
 import common.Mailbox;
 /**
  * A Chat server. Is currently run by the main thread, and accepts connections
@@ -51,6 +52,10 @@ public class Server {
 				read.start();
 				Thread write = new ServerWriteSocketThread(s, outgoing);
 				write.start();
+				// Send welome message
+				WelcomeMessage m = new WelcomeMessage();
+				m.setName(serverName);
+				cc.sendMsg(m);
 			}
 		} catch (IOException e) {
 			System.err.println("Failed setting up server socket.");
