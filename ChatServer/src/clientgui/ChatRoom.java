@@ -10,6 +10,8 @@ import message.ChatroomMessage;
 
 public class ChatRoom extends JPanel {
 	
+	private static final long serialVersionUID = 1L;
+	
 	private JTextArea text;
 	
 	public ChatRoom() {
@@ -28,7 +30,7 @@ public class ChatRoom extends JPanel {
 		add(scrollPane, BorderLayout.CENTER);
 	}
 	
-	public void addMessage(ChatroomMessage m) {
+	public void putMessage(ChatroomMessage m) {
 		text.append(m.getFrom() + ": " + m.getMsg() + "\n");
 	}
 

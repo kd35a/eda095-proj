@@ -2,6 +2,7 @@ package clientgui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -9,6 +10,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+
+import client.Client;
 
 import message.ConnectMessage;
 import message.NickMessage;
@@ -102,7 +105,14 @@ public class ConnectForm extends JFrame implements Runnable {
 				if (port < 0 || port > 65535)
 					throw new NumberFormatException();
 				
-				ChatWindow cw = new ChatWindow(host, port);
+				Client client = null;
+				try {
+					client = new Client(host, port);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+				ChatWindow cw = new ChatWindow(client);
 				
 				ConnectMessage cm = new ConnectMessage();
 				cw.sendMessage(cm);

@@ -5,7 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,14 +23,11 @@ import message.ChatroomMessage;
 import message.Message;
 import client.Client;
 
-import common.Mailbox;
-
-public class ChatWindow extends JFrame {
-	private static final String PROGRAM_NAME = "ChatServer";
-	private static final long serialVersionUID = 1L;
+public class ChatWindow extends JFrame implements ClientGUI {
 	
-	private Mailbox<Message> inbox;
-	private Mailbox<Message> outbox;
+	private static final long serialVersionUID = 1L;
+	private static final String PROGRAM_NAME = "ChatServer";
+	
 	private List<ChatRoom> chatrooms;
 	private Client client;
 	
@@ -47,16 +43,9 @@ public class ChatWindow extends JFrame {
 	private JPanel southPanel;
 	private JMenuBar menuBar;
 	
-	public ChatWindow(String host, int port) {
-		inbox = new Mailbox<Message>();
-		outbox = new Mailbox<Message>();
+	public ChatWindow(Client client) {
+		this.client = client;
 		chatrooms = new ArrayList<ChatRoom>();
-		
-		try {
-			client = new Client(host, port, inbox, outbox);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 		
 		initGUI();
 		
@@ -141,9 +130,9 @@ public class ChatWindow extends JFrame {
 			m.setMsg(msg);
 			m.setRoom(room);
 			
-			chatrooms.get(index).addMessage(m);
+			putMessage(m);
 			
-			outbox.put(m);
+			client.sendMessage(m);
 		}
 		
 	}
@@ -158,7 +147,13 @@ public class ChatWindow extends JFrame {
 	}
 	
 	protected void sendMessage(Message msg) {
-		outbox.put(msg);
+		client.sendMessage(msg);
+	}
+
+	@Override
+	public void putMessage(ChatroomMessage msg) {
+		int index = tabbedPane.getSelectedIndex();		
+		chatrooms.get(index).putMessage(msg);
 	}
 
 }
