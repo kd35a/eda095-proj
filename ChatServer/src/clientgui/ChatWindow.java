@@ -6,9 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -26,7 +24,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import message.ChatroomMessage;
-import message.JoinMessage;
 import message.Message;
 import client.Client;
 
@@ -34,7 +31,6 @@ public class ChatWindow extends JFrame implements ClientGUI {
 	
 	private static final long serialVersionUID = 1L;
 	private static final String PROGRAM_NAME = "ChatServer";
-	private static SimpleDateFormat df = new SimpleDateFormat("d MMM yyyy hh:mm:ss");
 	
 	private List<ChatRoomPanel> chatrooms;
 	private Client client;
@@ -197,17 +193,14 @@ public class ChatWindow extends JFrame implements ClientGUI {
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			String channel = JOptionPane.showInputDialog(parent, "Which room do"
+			String room = JOptionPane.showInputDialog(parent, "Which room do"
 					+ " you want to join?",
 					"Join chatroom",
 					JOptionPane.PLAIN_MESSAGE);
-			if (channel != null && !channel.isEmpty()) {
-				JoinMessage msg = new JoinMessage();
-				msg.setFrom(client.getNick());
-				msg.setRoom(channel);
-				msg.setTime(df.format(new Date()));
-				sendMessage(msg);
-				joinChatroom(channel);
+			room = room.trim();
+			if (room != null && !room.isEmpty()) {
+				client.joinRoom(room);
+				joinChatroom(room);
 			}
 		}
 		

@@ -123,8 +123,7 @@ public class ClientReadSocketThread extends Thread {
 	}
 	
 	private void consume(ListParticipantsMessage msg) {
-		// TODO Auto-generated method stub
-		
+		client.setChatRoomParticipants(msg.getRoom(), msg.getParticipants());
 	}
 
 }

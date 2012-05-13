@@ -109,6 +109,7 @@ public class MessageConsumerThread extends Thread {
 		}
 		ListParticipantsMessage msg = new ListParticipantsMessage();
 		msg.setParticipants(participants);
+		msg.setRoom(room);
 		cc.sendMsg(msg);
 	}
 	

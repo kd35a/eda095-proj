@@ -16,5 +16,13 @@ public class ListParticipantsMessage extends Message {
 	public List<String> getParticipants() {
 		return (List<String>) values.get("participants");
 	}
+	
+	public void setRoom(String s) {
+		values.put("room", s);
+	}
+	
+	public String getRoom() {
+		return (String) values.get("room");
+	}
 
 }
