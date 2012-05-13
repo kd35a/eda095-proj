@@ -39,7 +39,7 @@ public class ChatWindow extends JFrame implements ClientGUI {
 	 * GUI components
 	 */
 	private JPanel mainPanel;
-	private JList chatRoomList;
+	private JList participantsList;
 	private JScrollPane scrollPane;
 	private JTabbedPane tabbedPane;
 	private JTextField messageInputField;
@@ -49,12 +49,10 @@ public class ChatWindow extends JFrame implements ClientGUI {
 	
 	public ChatWindow(Client client) {
 		this.client = client;
+		client.setChatWindow(this);
 		chatrooms = new ArrayList<ChatRoomPanel>();
 		
 		initGUI();
-		
-		joinChatroom("Room 1");
-		joinChatroom("Room 2");
 	}
 
 	private void initGUI() {
@@ -73,12 +71,9 @@ public class ChatWindow extends JFrame implements ClientGUI {
 		mainPanel = new JPanel();
 		getContentPane().add(mainPanel);
 		mainPanel.setLayout(new BorderLayout(2, 2));
-
-		String[] data = { "#abc", "#foo", "#bar", "#abc", "#foo", "#bar",
-				"#abc", "#foo", "#bar", "#abc", "#foo", "#bar", "#abc", "#foo",
-				"#bar", "#abc", "#foo", "#bar" };
-		chatRoomList = new JList(data);
-		scrollPane = new JScrollPane(chatRoomList);
+		
+		participantsList = new JList(new String[0]);
+		scrollPane = new JScrollPane(participantsList);
 		mainPanel.add(scrollPane, BorderLayout.WEST);
 
 		tabbedPane = new JTabbedPane();
@@ -106,6 +101,7 @@ public class ChatWindow extends JFrame implements ClientGUI {
 	
 	private void joinChatroom(String name) {
 		ChatRoomPanel c = new ChatRoomPanel();
+		client.joinRoom(name);
 		chatrooms.add(c);
 		tabbedPane.addTab(name, c);
 	}
@@ -159,7 +155,7 @@ public class ChatWindow extends JFrame implements ClientGUI {
 		
 		public void windowClosing(WindowEvent e) {
 			System.out.println("Exit-button pressed");
-			// TODO Close connection to server here
+			client.disconnect();
 		}
 		
 	}
@@ -199,7 +195,6 @@ public class ChatWindow extends JFrame implements ClientGUI {
 					JOptionPane.PLAIN_MESSAGE);
 			room = room.trim();
 			if (room != null && !room.isEmpty()) {
-				client.joinRoom(room);
 				joinChatroom(room);
 			}
 		}
@@ -209,9 +204,10 @@ public class ChatWindow extends JFrame implements ClientGUI {
 	private class TabChanged implements ChangeListener {
 
 		@Override
-		public void stateChanged(ChangeEvent arg0) {
-			// TODO Auto-generated method stub
-			
+		public void stateChanged(ChangeEvent ce) {
+			int index = tabbedPane.getSelectedIndex();
+			String room = tabbedPane.getTitleAt(index);
+			participantsList.setListData(client.getChatRoomParticipants(room));
 		}
 		
 	}
@@ -224,6 +220,21 @@ public class ChatWindow extends JFrame implements ClientGUI {
 	public void putMessage(ChatroomMessage msg) {
 		int index = tabbedPane.getSelectedIndex();		
 		chatrooms.get(index).putMessage(msg);
+	}
+	
+	public void repaint() {
+		super.repaint();
+		int index = tabbedPane.getSelectedIndex();
+		if (index == -1 && tabbedPane.getTabCount() > 0) {
+			index = 0;
+			tabbedPane.setSelectedIndex(index);
+		} else if (index == -1) {
+			participantsList.setListData(new String[0]);
+			System.err.println("Something's goofy");
+			return;
+		}
+		String room = tabbedPane.getTitleAt(index);
+		participantsList.setListData(client.getChatRoomParticipants(room));
 	}
 
 }

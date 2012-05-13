@@ -1,21 +1,29 @@
 package client;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 public class ChatRoom {
-	private ArrayList<String> participants;
+	private Vector<String> participants;
 	
 	public ChatRoom() {
-		participants = new ArrayList<String>();
+		participants = new Vector<String>();
 	}
 	
 	public void setParticipants(List<String> participants) {
-		participants = new ArrayList<String>(participants);
+		this.participants = new Vector<String>(participants);
 	}
 	
-	public ArrayList<String> getParticipants() {
+	public Vector<String> getParticipants() {
 		return participants;
+	}
+
+	public void addParticipant(String name) {
+		participants.add(name);
+	}
+
+	public void removeParticipant(String name) {
+		participants.remove(name);
 	}
 
 }

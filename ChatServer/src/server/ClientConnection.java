@@ -1,5 +1,8 @@
 package server;
 
+import java.io.IOException;
+import java.net.Socket;
+
 import message.Message;
 import common.Mailbox;
 
@@ -9,6 +12,7 @@ public class ClientConnection {
 	
 	private String nick;
 	private Mailbox<Message> outgoing;
+	private Socket socket;
 	
 	/** Storage class for a client connection. Holds mailbox
 	 *  for outgoing messages, and the users current nickname.
@@ -16,8 +20,9 @@ public class ClientConnection {
 	 *  
 	 * @param outgoing	The mailbox for messages to this client.
 	 */
-	public ClientConnection(Mailbox<Message> outgoing) {
+	public ClientConnection(Mailbox<Message> outgoing, Socket s) {
 		this.outgoing = outgoing;
+		this.socket = s;
 		nick = "Anon" + userNbr++;
 	}
 	
@@ -32,4 +37,13 @@ public class ClientConnection {
 	public synchronized void sendMsg(Message m) {
 		outgoing.put(m);
 	}
+	
+	public void disconnect() {
+		try {
+			socket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 }

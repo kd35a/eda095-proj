@@ -42,7 +42,7 @@ public class Server {
 				
 				/* Create the corresponding client connection */
 				Mailbox<Message> outgoing = new Mailbox<Message>();
-				ClientConnection cc = new ClientConnection(outgoing);
+				ClientConnection cc = new ClientConnection(outgoing, s);
 				clientList.put(cc.getNick(), cc);
 				System.out.println("Client " + cc.getNick() + " connected.");
 				/* Starting threads */

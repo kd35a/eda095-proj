@@ -34,7 +34,15 @@ public class ClientWriteSocketThread extends Thread {
 		while (active) {
 			Message msg = in.get();
 			out.println(msg.toJSON());
+			if (out.checkError() && active) {
+				System.err.println("Could not write to out-stream:");
+			}
 		}
+	}
+
+	public void disconnect() {
+		active = false;
+		out.close();
 	}
 
 }

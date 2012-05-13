@@ -126,7 +126,44 @@ public class MessageConsumerThread extends Thread {
 	}
 	
 	private void consume(DisconnectMessage m) {
-		/* TODO: Implement me! */
+		/*
+		 * Warning: really bad and slow implementation if we get a lot of
+		 * rooms and users on the server.
+		 */
+		ArrayList<List<ClientConnection>> toRemoveFrom = new ArrayList<List<ClientConnection>>();
+		for (String room : roomList.keySet()) {
+			List<ClientConnection> ccList = roomList.get(room);
+			for (ClientConnection cc : ccList) {
+				if (cc.getNick().equals(m.getFrom())) {
+					// Remove the user from the room. The actual removal comes later
+					toRemoveFrom.add(ccList);
+					
+					// Generate list of still connected users, and put into a msg
+					ListParticipantsMessage listMsg = new ListParticipantsMessage();
+					listMsg.setRoom(room);
+					ArrayList<String> listOfNicks = new ArrayList<String>();
+					for (ClientConnection stillConnected : ccList) {
+						if (stillConnected != cc)
+							listOfNicks.add(stillConnected.getNick());
+					}
+					listMsg.setParticipants(listOfNicks);
+					
+					// Notify still connected users
+					for (ClientConnection stillConnected : ccList) {
+						// TODO Also/Or send a DisconnectMessage to the other people in the room?
+						stillConnected.sendMsg(listMsg);
+					}
+				}
+			}
+		}
+		
+		// The actual removal of user. Done here because of concurency-problems.
+		ClientConnection cc = clientList.get(m.getFrom());
+		for (List<ClientConnection> ccList : toRemoveFrom) {
+			ccList.remove(cc);
+		}
+		clientList.get(m.getFrom()).disconnect();
+		clientList.remove(m.getFrom());
 	}
 	
 	private void consume(NickMessage m) {

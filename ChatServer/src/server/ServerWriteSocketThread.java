@@ -35,7 +35,17 @@ public class ServerWriteSocketThread extends Thread {
 			Message msg = outgoing.get();
 			out.println(msg.toJSON());
 			System.out.println("Just sent " + msg.toJSON() + " to " + socket.getInetAddress());
+			if (out.checkError() && active && !socket.isClosed()) {
+				System.err.println("Could not write to out-stream:");
+			} else if (socket.isClosed()) {
+				return;
+			}
 		}
+	}
+
+	public void disconnect() {
+		active = false;
+		out.close();
 	}
 
 }

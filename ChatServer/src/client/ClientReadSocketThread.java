@@ -76,9 +76,11 @@ public class ClientReadSocketThread extends Thread {
 				else
 					System.err.println("Unknown message. Doing nothing.");
 			} catch (IOException e) {
-				System.out.println("Failed getting input from server "
-						+ socket.getInetAddress());
-				e.printStackTrace();
+				if (active == true) {
+					System.out.println("Failed getting input from server "
+							+ socket.getInetAddress());
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -103,13 +105,13 @@ public class ClientReadSocketThread extends Thread {
 	}
 
 	private void consume(PartMessage msg) {
-		// TODO Auto-generated method stub
-		
+		client.removeChatRoomParticipant(msg.getRoom(), msg.getFrom());
+		// TODO Also put a message in chat-window?
+		// TODO Use this instead of sending new list of participants? See server.MessageConsumerThread.consume(DisconnectMessage);
 	}
 
 	private void consume(JoinMessage msg) {
-		// TODO Auto-generated method stub
-		
+		client.addChatRoomParticipant(msg.getRoom(), msg.getFrom());
 	}
 
 	private void consume(PrivateMessage msg) {
@@ -124,6 +126,16 @@ public class ClientReadSocketThread extends Thread {
 	
 	private void consume(ListParticipantsMessage msg) {
 		client.setChatRoomParticipants(msg.getRoom(), msg.getParticipants());
+	}
+
+	public void disconnect() {
+		try {
+			active = false;
+			in.close();
+		} catch (IOException e) {
+			System.err.println("Could not close read-buffer.");
+			e.printStackTrace();
+		}
 	}
 
 }

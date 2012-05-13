@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Vector;
 
+import clientgui.ChatWindow;
+
+import message.DisconnectMessage;
 import message.JoinMessage;
 import message.Message;
 
@@ -23,6 +26,9 @@ public class Client {
 	private Mailbox<Message> outbox;
 	private String nickname;
 	private HashMap<String, ChatRoom> chatRooms;
+	private ClientReadSocketThread clientRST;
+	private ClientWriteSocketThread clientWST;
+	private ChatWindow chatWindow;
 
 	public Client(String host, int port) throws IOException {
 		serverName = host;
@@ -32,11 +38,10 @@ public class Client {
 		outbox = new Mailbox<Message>();
 		chatRooms = new HashMap<String, ChatRoom>();
 		
-		Thread t;
-		t = new ClientReadSocketThread(this, socket, inbox);
-		t.start();
-		t = new ClientWriteSocketThread(socket, outbox);
-		t.start();
+		clientRST = new ClientReadSocketThread(this, socket, inbox);
+		clientRST.start();
+		clientWST = new ClientWriteSocketThread(socket, outbox);
+		clientWST.start();
 	}
 	
 	public String getServerName() {
@@ -67,10 +72,43 @@ public class Client {
 
 	public void setChatRoomParticipants(String room, List<String> participants) {
 		chatRooms.get(room).setParticipants(participants);
+		if (chatWindow != null) {
+			chatWindow.repaint();
+		}
 	}
 	
-	public ArrayList<String> getChatRoomParticipants(String room) {
+	public Vector<String> getChatRoomParticipants(String room) {
 		return chatRooms.get(room).getParticipants();
+	}
+	
+	public void addChatRoomParticipant(String room, String name) {
+		chatRooms.get(room).addParticipant(name);
+		if (chatWindow != null) {
+			chatWindow.repaint();
+		}
+	}
+	
+	public void removeChatRoomParticipant(String room, String name) {
+		chatRooms.get(room).removeParticipant(name);
+		if (chatWindow != null) {
+			chatWindow.repaint();
+		}
+	}
+
+	public void disconnect() {
+		try {
+			outbox.put(new DisconnectMessage());
+			clientRST.disconnect();
+			clientWST.disconnect();
+			socket.close();
+		} catch (IOException e) {
+			System.err.println("Problem closing connection to server.");
+			e.printStackTrace();
+		}
+	}
+
+	public void setChatWindow(ChatWindow chatWindow) {
+		this.chatWindow = chatWindow;
 	}
 
 }

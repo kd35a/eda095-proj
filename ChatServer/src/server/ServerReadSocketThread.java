@@ -56,10 +56,24 @@ public class ServerReadSocketThread extends Thread {
 				System.out.println("received " + msg.toJSON());
 				messages.put(msg);
 			} catch (IOException e) {
-				System.out.println("Failed getting input from client "
-						+ socket.getInetAddress());
-				e.printStackTrace();
+				if (!socket.isClosed()) {
+					System.out.println("Failed getting input from client "
+							+ socket.getInetAddress());
+					e.printStackTrace();
+				} else {
+					return;
+				}
 			}
+		}
+	}
+
+	public void disconnect() {
+		try {
+			active = false;
+			in.close();
+		} catch (IOException e) {
+			System.err.println("Could not close read-buffer.");
+			e.printStackTrace();
 		}
 	}
 
