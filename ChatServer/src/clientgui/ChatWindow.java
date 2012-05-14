@@ -101,6 +101,7 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 		
 		initMenu();
 
+		setLocationRelativeTo(null);
 		setVisible(true);
 	}
 	
