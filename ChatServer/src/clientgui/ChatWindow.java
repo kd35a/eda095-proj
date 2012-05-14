@@ -271,19 +271,23 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 			int index = tabbedPane.getSelectedIndex();
 			if (index != -1) {
 				String to = tabbedPane.getTitleAt(index);
-
+				
 				Message m = null;
 
 				if (to.charAt(0) == '#') {
 					ChatroomMessage cm = new ChatroomMessage();
+					cm.setFrom(client.getNick());
 					cm.setMsg(msg);
 					cm.setRoom(to.substring(1));
 					m = cm;
+					putMessage(cm);
 				} else {
 					PrivateMessage pm = new PrivateMessage();
+					pm.setFrom(client.getNick());
 					pm.setMsg(msg);
 					pm.setTo(to);
 					m = pm;
+					putMessage(pm);
 				}
 
 				client.sendMessage(m);
@@ -395,7 +399,10 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 
 	@Override
 	public void putMessage(PrivateMessage msg) {
-		chatrooms.get(msg.getTo()).putMessage(msg);
+		if (client.getNick().equals(msg.getFrom()))
+			chatrooms.get(msg.getTo()).putMessage(msg);
+		else 
+			chatrooms.get(msg.getFrom()).putMessage(msg);
 	}
 
 	@Override
@@ -403,6 +410,11 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 		if (arg instanceof ChatroomMessage) {
 			putMessage((ChatroomMessage) arg);
 		} else if (arg instanceof PrivateMessage) {
+			PrivateMessage pm = (PrivateMessage) arg;
+			ChatPanel room = chatrooms.get(pm.getFrom());
+			if (room == null) {
+				joinPrivateRoom(pm.getFrom());
+			}
 			putMessage((PrivateMessage) arg);
 		} else if (arg == null) {
 			updateParticipants();

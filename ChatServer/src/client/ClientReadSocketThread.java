@@ -126,8 +126,7 @@ public class ClientReadSocketThread extends Thread {
 	}
 
 	private void consume(PrivateMessage msg) {
-		// TODO Auto-generated method stub
-		
+		client.handleMessage(msg);
 	}
 
 	private void consume(ChatroomMessage msg) {

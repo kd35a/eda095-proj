@@ -142,6 +142,9 @@ public class Client extends Observable {
 	}
 
 	public void renameChatRoomParticipant(String oldNick, String newNick) {
+		if (oldNick.equals(this.nickname)) {
+			this.nickname = newNick;
+		}
 		for (ChatRoom cr : chatRooms.values()) {
 			cr.renameChatRoomParticipant(oldNick, newNick);
 		}
