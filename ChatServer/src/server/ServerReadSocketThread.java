@@ -17,11 +17,13 @@ public class ServerReadSocketThread extends Thread {
 	private Socket socket;
 	private boolean active; // TODO: USE ME!
 	private BufferedReader in;
-	private Mailbox<Message> messages; // Mailbox shared by all client communication threads
+	private Mailbox<Message> messages; // Mailbox shared by all client
+										// communication threads
 	private ClientConnection cc;
 	private DateFormat df;
 
-	public ServerReadSocketThread(Socket s, Mailbox<Message> messages, ClientConnection cc) {
+	public ServerReadSocketThread(Socket s, Mailbox<Message> messages,
+			ClientConnection cc) {
 		this.socket = s;
 		this.messages = messages;
 		this.active = true;
@@ -41,10 +43,11 @@ public class ServerReadSocketThread extends Thread {
 	public void run() {
 		while (active) {
 			try {
-				//Puts a message in the shared mailbox
+				// Puts a message in the shared mailbox
 				String input = in.readLine();
 				if (input == null) {
-					// TODO: handle client shut down (remove from client from lists)
+					// TODO: handle client shut down (remove from client from
+					// lists)
 					socket.close();
 					active = false;
 					break;
@@ -56,13 +59,10 @@ public class ServerReadSocketThread extends Thread {
 				System.out.println("received " + msg.toJSON());
 				messages.put(msg);
 			} catch (IOException e) {
-				if (!socket.isClosed()) {
-					System.out.println("Failed getting input from client "
-							+ socket.getInetAddress());
-					e.printStackTrace();
-				} else {
-					return;
-				}
+				System.out.println("Failed getting input from client "
+						+ socket.getInetAddress());
+				e.printStackTrace();
+				return;
 			}
 		}
 	}
