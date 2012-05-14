@@ -89,7 +89,9 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 		getContentPane().add(mainPanel);
 		mainPanel.setLayout(new BorderLayout(2, 2));
 
-		participantsList = new JList(new String[0]);
+		participantsList = new JList(new String[]{""});
+		participantsList.setPreferredSize(new Dimension(200, 0));
+		participantsList.addMouseListener(new ParticipantListListener(participantsList));
 		scrollPane = new JScrollPane(participantsList);
 		mainPanel.add(scrollPane, BorderLayout.WEST);
 
