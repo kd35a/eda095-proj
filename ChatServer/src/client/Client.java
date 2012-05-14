@@ -96,6 +96,13 @@ public class Client extends Observable {
 			chatWindow.repaint();
 		}
 	}
+	
+	public void removeChatRoomParticipant(String name) {
+		for (ChatRoom cr : chatRooms.values()) {
+			cr.removeParticipant(name);
+		}
+		chatWindow.repaint();
+	}
 
 	public void disconnect() {
 		try {

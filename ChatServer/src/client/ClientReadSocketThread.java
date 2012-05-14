@@ -102,8 +102,7 @@ public class ClientReadSocketThread extends Thread {
 	}
 
 	private void consume(DisconnectMessage msg) {
-		// TODO Auto-generated method stub
-		
+		client.removeChatRoomParticipant(msg.getFrom());
 	}
 
 	private void consume(ConnectMessage msg) {
