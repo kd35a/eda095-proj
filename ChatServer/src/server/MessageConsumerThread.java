@@ -114,7 +114,20 @@ public class MessageConsumerThread extends Thread {
 	}
 	
 	private void consume(PartMessage m) {
-		/* TODO: Implement me! */
+		// Remove from room
+		String room = m.getRoom();
+		List<ClientConnection> chatRoom = roomList.get(room);
+		if (chatRoom == null) {
+			return; // TODO: handle error, room does not exist
+		}
+		String nick = m.getFrom();
+		ClientConnection cc = clientList.get(nick);
+		chatRoom.remove(cc);
+		
+		// Broadcast part
+		for (ClientConnection client : chatRoom) {
+			client.sendMsg(m);
+		}
 	}
 	
 	private void consume(ConnectMessage m) {
@@ -157,7 +170,7 @@ public class MessageConsumerThread extends Thread {
 			}
 		}
 		
-		// The actual removal of user. Done here because of concurency-problems.
+		// The actual removal of user. Done here because of concurrency-problems.
 		ClientConnection cc = clientList.get(m.getFrom());
 		for (List<ClientConnection> ccList : toRemoveFrom) {
 			ccList.remove(cc);

@@ -107,7 +107,6 @@ public class ClientReadSocketThread extends Thread {
 	private void consume(PartMessage msg) {
 		client.removeChatRoomParticipant(msg.getRoom(), msg.getFrom());
 		// TODO Also put a message in chat-window?
-		// TODO Use this instead of sending new list of participants? See server.MessageConsumerThread.consume(DisconnectMessage);
 	}
 
 	private void consume(JoinMessage msg) {
