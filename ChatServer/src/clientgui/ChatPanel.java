@@ -7,13 +7,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import message.ChatroomMessage;
+import message.PrivateMessage;
 
-public class ChatRoomPanel extends JPanel {
+public class ChatPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	
 	private JTextArea text;
 	
-	public ChatRoomPanel() {
+	public ChatPanel() {
 		super();
 		
 		initGUI();
@@ -30,6 +31,11 @@ public class ChatRoomPanel extends JPanel {
 	}
 	
 	public void putMessage(ChatroomMessage m) {
+		text.append(m.getFrom() + ": " + m.getMsg() + "\n");
+		text.setCaretPosition(text.getDocument().getLength());
+	}
+	
+	public void putMessage(PrivateMessage m) {
 		text.append(m.getFrom() + ": " + m.getMsg() + "\n");
 		text.setCaretPosition(text.getDocument().getLength());
 	}

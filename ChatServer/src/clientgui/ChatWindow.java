@@ -50,7 +50,7 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 	private static final long serialVersionUID = 1L;
 	private static final String PROGRAM_NAME = "ChatServer";
 
-	private Map<String, ChatRoomPanel> chatrooms;
+	private Map<String, ChatPanel> chatrooms;
 	private Client client;
 
 	/*
@@ -68,7 +68,7 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 	public ChatWindow(Client client) {
 		this.client = client;
 		client.setChatWindow(this);
-		chatrooms = new HashMap<String, ChatRoomPanel>();
+		chatrooms = new HashMap<String, ChatPanel>();
 
 		initGUI();
 	}
@@ -92,7 +92,7 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 
 		participantsList = new JList(new String[]{""});
 		participantsList.setPreferredSize(new Dimension(200, 0));
-		participantsList.addMouseListener(new ParticipantListListener(participantsList));
+		participantsList.addMouseListener(new ParticipantListListener(this, participantsList));
 		scrollPane = new JScrollPane(participantsList);
 		mainPanel.add(scrollPane, BorderLayout.WEST);
 
@@ -121,8 +121,16 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 	}
 
 	private void joinChatroom(String name) {
-		ChatRoomPanel c = new ChatRoomPanel();
+		ChatPanel c = new ChatPanel();
 		client.joinRoom(name);
+		chatrooms.put(name, c);
+		int index = tabbedPane.getTabCount();
+		tabbedPane.add("#" + name, c);
+		tabbedPane.setTabComponentAt(index, new TabComponent(tabbedPane));
+	}
+	
+	public void joinPrivateRoom(String name) {
+		ChatPanel c = new ChatPanel();
 		chatrooms.put(name, c);
 		int index = tabbedPane.getTabCount();
 		tabbedPane.add(name, c);
@@ -261,13 +269,21 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 
 			int index = tabbedPane.getSelectedIndex();
 			if (index != -1) {
-				String room = tabbedPane.getTitleAt(index);
-
-				ChatroomMessage m = new ChatroomMessage();
-				m.setMsg(msg);
-				m.setRoom(room);
-
-				// putMessage(m);
+				String to = tabbedPane.getTitleAt(index);
+				
+				Message m = null;
+				
+				if (to.charAt(0) == '#') {
+					ChatroomMessage cm = new ChatroomMessage();
+					cm.setMsg(msg);
+					cm.setRoom(to.substring(1));
+					m = cm;
+				} else {
+					PrivateMessage pm = new PrivateMessage();
+					pm.setMsg(msg);
+					pm.setTo(to);
+					m = pm;
+				}
 
 				client.sendMessage(m);
 			}
@@ -369,7 +385,12 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 
 	@Override
 	public void putMessage(ChatroomMessage msg) {
-		chatrooms.get(msg.getRoom()).putMessage(msg);
+		chatrooms.get("#" + msg.getRoom()).putMessage(msg);
+	}
+	
+	@Override
+	public void putMessage(PrivateMessage msg) {
+		chatrooms.get(msg.getTo()).putMessage(msg);
 	}
 
 	public void repaint() {

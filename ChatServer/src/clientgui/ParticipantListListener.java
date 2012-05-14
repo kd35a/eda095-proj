@@ -13,7 +13,7 @@ public class ParticipantListListener extends MouseAdapter {
 	private JList list;
 	private JPopupMenu menu;
 
-	public ParticipantListListener(JList list) {
+	public ParticipantListListener(final ChatWindow window, final JList list) {
 		this.list = list;
 		this.menu = new JPopupMenu();
 
@@ -21,7 +21,7 @@ public class ParticipantListListener extends MouseAdapter {
 		pm.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("skicka pm!");
+				window.joinPrivateRoom((String) list.getSelectedValue());
 			}
 		});
 
@@ -40,7 +40,6 @@ public class ParticipantListListener extends MouseAdapter {
 	public void mouseClicked(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON3) {
 			list.setSelectedIndex(list.locationToIndex(e.getPoint()));
-			System.out.println(list.getSelectedIndex());
 			menu.show(e.getComponent(), e.getX(), e.getY());
 		}
 	}
