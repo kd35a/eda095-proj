@@ -1,33 +1,20 @@
 package clientgui;
 
-import java.awt.BasicStroke;
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Vector;
 
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -44,7 +31,6 @@ import javax.swing.event.ChangeListener;
 import message.ChatroomMessage;
 import message.Message;
 import message.NickMessage;
-import message.PartMessage;
 import message.PrivateMessage;
 import client.Client;
 
@@ -87,7 +73,12 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 		setSize(800, 600);
 
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		addWindowListener(new ChatWindowCloseListener());
+		addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				System.out.println("Exit-button pressed");
+				client.disconnect();
+			}
+		});
 
 		mainPanel = new JPanel();
 		getContentPane().add(mainPanel);
@@ -101,7 +92,12 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 		scrollPane = new JScrollPane(participantsList);
 
 		tabbedPane = new JTabbedPane();
-		tabbedPane.addChangeListener(new TabChanged());
+		tabbedPane.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent ce) {
+				updateParticipants();
+			}
+		});
 
 		JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		split.add(scrollPane);
@@ -127,111 +123,6 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}
-
-	private void joinChatroom(String name) {
-		ChatPanel c = new ChatPanel();
-		client.joinRoom(name);
-		name = "#" + name;
-		chatrooms.put(name, c);
-		int index = tabbedPane.getTabCount();
-		tabbedPane.add(name, c);
-		tabbedPane.setTabComponentAt(index, new TabComponent(name, tabbedPane));
-	}
-
-	public void joinPrivateRoom(String name) {
-		ChatPanel c = new ChatPanel();
-		chatrooms.put(name, c);
-		int index = tabbedPane.getTabCount();
-		tabbedPane.add(name, c);
-		tabbedPane.setTabComponentAt(index, new TabComponent(name, tabbedPane));
-	}
-
-	private class TabComponent extends JPanel {
-
-		private final JTabbedPane pane;
-
-		private TabComponent(String name, final JTabbedPane pane) {
-			super(new FlowLayout(FlowLayout.LEFT, 0, 0));
-
-			this.pane = pane;
-
-			setOpaque(false);
-
-			JLabel label = new JLabel(name);
-			label.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
-			add(label);
-
-			JButton button = new TabButton();
-			add(button);
-
-			setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
-		}
-
-		private class TabButton extends JButton implements ActionListener {
-
-			private TabButton() {
-				int size = 17;
-				setPreferredSize(new Dimension(size, size));
-
-				setContentAreaFilled(false);
-				setFocusable(false);
-				setBorder(BorderFactory.createEtchedBorder());
-				setBorderPainted(false);
-				addMouseListener(buttonMouseListener);
-				setRolloverEnabled(true);
-
-				addActionListener(this);
-			}
-
-			protected void paintComponent(Graphics g) {
-				super.paintComponent(g);
-				Graphics2D g2 = (Graphics2D) g.create();
-
-				g2.setStroke(new BasicStroke(2));
-				g2.setColor(Color.BLACK);
-
-				int delta = 6;
-				g2.drawLine(delta, delta, getWidth() - delta - 1, getHeight()
-						- delta - 1);
-				g2.drawLine(getWidth() - delta - 1, delta, delta, getHeight()
-						- delta - 1);
-				g2.dispose();
-			}
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				String room = null;
-				int i = pane.indexOfTabComponent(TabComponent.this);
-				if (i != -1) {
-					room = pane.getTitleAt(i);
-					pane.remove(i);
-				}
-				PartMessage msg = new PartMessage();
-				msg.setRoom(room.substring(1));
-				client.sendMessage(msg);
-			}
-
-		}
-
-	}
-
-	private final static MouseListener buttonMouseListener = new MouseAdapter() {
-		public void mouseEntered(MouseEvent e) {
-			Component component = e.getComponent();
-			if (component instanceof AbstractButton) {
-				AbstractButton button = (AbstractButton) component;
-				button.setBorderPainted(true);
-			}
-		}
-
-		public void mouseExited(MouseEvent e) {
-			Component component = e.getComponent();
-			if (component instanceof AbstractButton) {
-				AbstractButton button = (AbstractButton) component;
-				button.setBorderPainted(false);
-			}
-		}
-	};
 
 	private void initMenu() {
 		menuBar = new JMenuBar();
@@ -259,6 +150,26 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 		menuBar.add(fileMenu);
 		menuBar.add(serverMenu);
 		setJMenuBar(menuBar);
+	}
+
+	private void joinChatroom(String name) {
+		ChatPanel c = new ChatPanel();
+		client.joinRoom(name);
+		name = "#" + name;
+		chatrooms.put(name, c);
+		int index = tabbedPane.getTabCount();
+		tabbedPane.add(name, c);
+		tabbedPane.setTabComponentAt(index, 
+				new TabComponent(name, tabbedPane, client));
+	}
+
+	public void joinPrivateRoom(String name) {
+		ChatPanel c = new ChatPanel();
+		chatrooms.put(name, c);
+		int index = tabbedPane.getTabCount();
+		tabbedPane.add(name, c);
+		tabbedPane.setTabComponentAt(index, 
+				new TabComponent(name, tabbedPane, client));
 	}
 
 	private class SendMessageListener implements ActionListener {
@@ -292,15 +203,6 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 
 				client.sendMessage(m);
 			}
-		}
-
-	}
-
-	private class ChatWindowCloseListener extends WindowAdapter {
-
-		public void windowClosing(WindowEvent e) {
-			System.out.println("Exit-button pressed");
-			client.disconnect();
 		}
 
 	}
@@ -366,15 +268,6 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 		}
 
 	}
-
-	private class TabChanged implements ChangeListener {
-
-		@Override
-		public void stateChanged(ChangeEvent ce) {
-			updateParticipants();
-		}
-
-	}
 	
 	private void updateParticipants() {
 		int index = tabbedPane.getSelectedIndex();
@@ -383,13 +276,11 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 			Vector<String> data = client.getChatRoomParticipants(room.substring(1));
 			if (data != null)
 				participantsList.setListData(data);
+			else
+				participantsList.setListData(new String[] { "" });
 		} else {
 			participantsList.setListData(new String[] { "" });
 		}
-	}
-
-	protected void sendMessage(Message msg) {
-		client.sendMessage(msg);
 	}
 
 	@Override

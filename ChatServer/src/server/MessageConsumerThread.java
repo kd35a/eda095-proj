@@ -127,6 +127,19 @@ public class MessageConsumerThread extends Thread {
 	
 	private void consume(ConnectMessage m) {
 		ClientConnection cc = clientList.get(m.getFrom());
+		
+		if (m.getNick() != null && clientList.get(m.getNick()) != null) {
+			ErrorMessage err = new ErrorMessage();
+			err.setMsg("Nickname " + m.getNick() + " is taken.");
+			cc.sendMsg(err);
+			return;
+		} else if (m.getNick() != null) {
+			// Nick change
+			clientList.remove(cc.getNick());
+			cc.setNick(m.getNick());
+			clientList.put(cc.getNick(), cc);
+		}
+		
 		WelcomeMessage wm = new WelcomeMessage();
 		wm.setName(serverName);
 		wm.setNick(cc.getNick());

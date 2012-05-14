@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.net.SocketException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -58,6 +59,9 @@ public class ServerReadSocketThread extends Thread {
 				msg.setFrom(cc.getNick());
 				System.out.println("received " + msg.toJSON());
 				messages.put(msg);
+			} catch (SocketException e) {
+				System.out.println("Hard disconnect from client " + socket.getInetAddress());
+				return;
 			} catch (IOException e) {
 				System.out.println("Failed getting input from client "
 						+ socket.getInetAddress());

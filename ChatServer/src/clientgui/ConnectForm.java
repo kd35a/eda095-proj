@@ -118,10 +118,10 @@ public class ConnectForm extends JFrame implements Runnable {
 				client.addObserver(cw);
 				
 				ConnectMessage cm = new ConnectMessage();
-				cw.sendMessage(cm);
+				client.sendMessage(cm);
 				
 				if (!nick.equals("")) {
-					client.setNewNickname(nick);
+					cm.setNick(nick);
 				}
 				
 				parent.setVisible(false);

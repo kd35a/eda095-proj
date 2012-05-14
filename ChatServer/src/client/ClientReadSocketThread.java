@@ -25,14 +25,12 @@ public class ClientReadSocketThread extends Thread {
 	private boolean active;
 	private Socket socket;
 	private BufferedReader in;
-	private Mailbox<Message> inbox;
 	private Client client;
 
-	public ClientReadSocketThread(Client client, Socket s, Mailbox<Message> inbox) {
+	public ClientReadSocketThread(Client client, Socket s) {
 		this.client = client;
 		active = true;
 		socket = s;
-		this.inbox = inbox;
 		try {
 			in = new BufferedReader(new InputStreamReader(socket
 					.getInputStream()));
@@ -93,14 +91,14 @@ public class ClientReadSocketThread extends Thread {
 
 	private void consume(WelcomeMessage msg) {
 		client.setNick(msg.getNick());
-		String newNickname = client.getNewNickname();
+		/*String newNickname = client.getNewNickname();
 		if (newNickname != null && !newNickname.equals("")) {
 			NickMessage nm = new NickMessage();
 			nm.setFrom(msg.getNick());
 			nm.setNick(newNickname);
 			client.sendMessage(nm);
 			client.setNewNickname("");
-		}
+		}*/
 	}
 
 	private void consume(NickMessage msg) {
@@ -126,12 +124,13 @@ public class ClientReadSocketThread extends Thread {
 	}
 
 	private void consume(PrivateMessage msg) {
-		client.handleMessage(msg);
+		if (!msg.getFrom().equals(client.getNick()))
+			client.handleMessage(msg);
 	}
 
 	private void consume(ChatroomMessage msg) {
-		// client.getChatWindow().putMessage(msg);
-		client.handleMessage(msg);
+		if (!msg.getFrom().equals(client.getNick()))
+			client.handleMessage(msg);
 	}
 	
 	private void consume(ListParticipantsMessage msg) {

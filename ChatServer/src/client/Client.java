@@ -24,7 +24,6 @@ public class Client extends Observable {
 
 	private String serverName;
 	private Socket socket;
-	private Mailbox<Message> inbox;
 	private Mailbox<Message> outbox;
 	private String nickname = "";
 	private String newNickname;
@@ -37,11 +36,10 @@ public class Client extends Observable {
 		serverName = host;
 		InetAddress address = InetAddress.getByName(host);
 		socket = new Socket(address, port);
-		inbox = new Mailbox<Message>();
 		outbox = new Mailbox<Message>();
 		chatRooms = new HashMap<String, ChatRoom>();
 
-		clientRST = new ClientReadSocketThread(this, socket, inbox);
+		clientRST = new ClientReadSocketThread(this, socket);
 		clientRST.start();
 		clientWST = new ClientWriteSocketThread(socket, outbox);
 		clientWST.start();
