@@ -1,7 +1,5 @@
 package server;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import message.ChatroomMessage;
@@ -24,7 +22,7 @@ public class MessageConsumerThread extends Thread {
 	private Mailbox<Message> messages;
 	private boolean active;
 	private ConcurrentHashMap<String, ClientConnection> clientList;
-	private ConcurrentHashMap<String, ServerChatRoom> roomList;
+	private ConcurrentHashMap<String, ChatRoomConnection> roomList;
 	
 	public MessageConsumerThread(String serverName, ConcurrentHashMap<String, ClientConnection> clientList, 
 			Mailbox<Message> messages) {
@@ -32,7 +30,7 @@ public class MessageConsumerThread extends Thread {
 		this.clientList = clientList;
 		this.messages = messages;
 		this.active = true;
-		this.roomList = new ConcurrentHashMap<String, ServerChatRoom>();
+		this.roomList = new ConcurrentHashMap<String, ChatRoomConnection>();
 	}
 	
 	public void run() {
@@ -60,20 +58,27 @@ public class MessageConsumerThread extends Thread {
 	}
 	
 	private void consume(PrivateMessage m) {
-		ClientConnection cc = clientList.get(m.getTo());
-		if (cc == null) {
-			cc = clientList.get(m.getFrom());
+		ClientConnection to = clientList.get(m.getTo());
+		ClientConnection from = clientList.get(m.getFrom());
+		
+		if (to == null) {
+			from = clientList.get(m.getFrom());
 			ErrorMessage err = new ErrorMessage();
 			err.setMsg("User " + m.getTo() + " not found.");
-			cc.sendMsg(err);
+			from.sendMsg(err);
 			return;
 		}
-		cc.sendMsg(m);
+		
+		/* Set up broadcastable connection link */
+		to.addConnection(new PrivateMessageConnection(from));
+		from.addConnection(new PrivateMessageConnection(to));
+		
+		to.sendMsg(m);
 	}
 	
 	private void consume(ChatroomMessage m) {
 		String room = m.getRoom();
-		ServerChatRoom chatRoom = roomList.get(room);
+		ChatRoomConnection chatRoom = roomList.get(room);
 		if (chatRoom == null) {
 			return; // TODO: handle error, room does not exist
 		}
@@ -83,9 +88,9 @@ public class MessageConsumerThread extends Thread {
 	private void consume(JoinMessage m) {
 		// Get or create chat room
 		String room = m.getRoom();
-		ServerChatRoom chatRoom = roomList.get(room);
+		ChatRoomConnection chatRoom = roomList.get(room);
 		if (chatRoom == null) {
-			chatRoom = new ServerChatRoom(room);
+			chatRoom = new ChatRoomConnection(room);
 			roomList.put(room, chatRoom);
 		}
 		
@@ -107,7 +112,7 @@ public class MessageConsumerThread extends Thread {
 	private void consume(PartMessage m) {
 		// Remove from room
 		String room = m.getRoom();
-		ServerChatRoom chatRoom = roomList.get(room);
+		ChatRoomConnection chatRoom = roomList.get(room);
 		if (chatRoom == null) {
 			return; // TODO: handle error, room does not exist
 		}
