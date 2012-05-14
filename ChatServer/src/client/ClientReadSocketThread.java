@@ -23,14 +23,14 @@ public class ClientReadSocketThread extends Thread {
 	private boolean active;
 	private Socket socket;
 	private BufferedReader in;
-	private Mailbox<Message> out;
+	private Mailbox<Message> inbox;
 	private Client client;
 
-	public ClientReadSocketThread(Client client, Socket s, Mailbox<Message> box) {
+	public ClientReadSocketThread(Client client, Socket s, Mailbox<Message> inbox) {
 		this.client = client;
 		active = true;
 		socket = s;
-		out = box;
+		this.inbox = inbox;
 		try {
 			in = new BufferedReader(new InputStreamReader(socket
 					.getInputStream()));
@@ -120,8 +120,8 @@ public class ClientReadSocketThread extends Thread {
 	}
 
 	private void consume(ChatroomMessage msg) {
-		// TODO Auto-generated method stub
-		
+		// client.getChatWindow().putMessage(msg);
+		client.handleMessage(msg);
 	}
 	
 	private void consume(ListParticipantsMessage msg) {

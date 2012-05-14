@@ -8,6 +8,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -27,7 +29,7 @@ import message.ChatroomMessage;
 import message.Message;
 import client.Client;
 
-public class ChatWindow extends JFrame implements ClientGUI {
+public class ChatWindow extends JFrame implements ClientGUI, Observer {
 	
 	private static final long serialVersionUID = 1L;
 	private static final String PROGRAM_NAME = "ChatServer";
@@ -144,7 +146,7 @@ public class ChatWindow extends JFrame implements ClientGUI {
 			m.setMsg(msg);
 			m.setRoom(room);
 			
-			putMessage(m);
+			// putMessage(m);
 			
 			client.sendMessage(m);
 		}
@@ -235,6 +237,13 @@ public class ChatWindow extends JFrame implements ClientGUI {
 		}
 		String room = tabbedPane.getTitleAt(index);
 		participantsList.setListData(client.getChatRoomParticipants(room));
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		if (arg instanceof ChatroomMessage) {
+			putMessage((ChatroomMessage) arg);
+		}
 	}
 
 }

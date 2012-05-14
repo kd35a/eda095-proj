@@ -113,6 +113,7 @@ public class ConnectForm extends JFrame implements Runnable {
 				}
 				
 				ChatWindow cw = new ChatWindow(client);
+				client.addObserver(cw);
 				
 				ConnectMessage cm = new ConnectMessage();
 				cw.sendMessage(cm);

@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Observable;
 import java.util.Vector;
 
 import clientgui.ChatWindow;
@@ -17,7 +18,7 @@ import message.Message;
 
 import common.Mailbox;
 
-public class Client {
+public class Client extends Observable {
 	private static SimpleDateFormat df = new SimpleDateFormat("d MMM yyyy hh:mm:ss");
 
 	private String serverName;
@@ -109,6 +110,15 @@ public class Client {
 
 	public void setChatWindow(ChatWindow chatWindow) {
 		this.chatWindow = chatWindow;
+	}
+	
+	public ChatWindow getChatWindow() {
+		return chatWindow;
+	}
+	
+	public void handleMessage(Message msg) {
+		setChanged();
+		notifyObservers(msg);
 	}
 
 }
