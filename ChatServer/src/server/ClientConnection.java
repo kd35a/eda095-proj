@@ -2,6 +2,9 @@ package server;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
+
+import com.sun.swing.internal.plaf.synth.resources.synth;
 
 import message.Message;
 import common.Mailbox;
@@ -13,6 +16,7 @@ public class ClientConnection {
 	private String nick;
 	private Mailbox<Message> outgoing;
 	private Socket socket;
+	private ArrayList<Broadcastable> connections;
 	
 	/** Storage class for a client connection. Holds mailbox
 	 *  for outgoing messages, and the users current nickname.
@@ -23,6 +27,7 @@ public class ClientConnection {
 	public ClientConnection(Mailbox<Message> outgoing, Socket s) {
 		this.outgoing = outgoing;
 		this.socket = s;
+		connections = new ArrayList<Broadcastable>();
 		nick = "Anon" + userNbr++;
 	}
 	
@@ -36,6 +41,18 @@ public class ClientConnection {
 	
 	public synchronized void sendMsg(Message m) {
 		outgoing.put(m);
+	}
+	
+	public synchronized void addConnection(Broadcastable conn) {
+		connections.add(conn);
+	}
+	
+	public synchronized void removeConnection(Broadcastable conn) {
+		connections.remove(conn);
+	}
+	
+	public synchronized ArrayList<Broadcastable> getConnections() {
+		return connections;
 	}
 	
 	public void disconnect() {

@@ -24,7 +24,7 @@ public class MessageConsumerThread extends Thread {
 	private Mailbox<Message> messages;
 	private boolean active;
 	private ConcurrentHashMap<String, ClientConnection> clientList;
-	private ConcurrentHashMap<String, List<ClientConnection>> roomList;
+	private ConcurrentHashMap<String, ServerChatRoom> roomList;
 	
 	public MessageConsumerThread(String serverName, ConcurrentHashMap<String, ClientConnection> clientList, 
 			Mailbox<Message> messages) {
@@ -32,7 +32,7 @@ public class MessageConsumerThread extends Thread {
 		this.clientList = clientList;
 		this.messages = messages;
 		this.active = true;
-		this.roomList = new ConcurrentHashMap<String, List<ClientConnection>>();
+		this.roomList = new ConcurrentHashMap<String, ServerChatRoom>();
 	}
 	
 	public void run() {
@@ -69,46 +69,37 @@ public class MessageConsumerThread extends Thread {
 			return;
 		}
 		cc.sendMsg(m);
-		System.out.println("sent private message!");
 	}
 	
 	private void consume(ChatroomMessage m) {
 		String room = m.getRoom();
-		List<ClientConnection> chatRoom = roomList.get(room);
+		ServerChatRoom chatRoom = roomList.get(room);
 		if (chatRoom == null) {
 			return; // TODO: handle error, room does not exist
 		}
-		for (ClientConnection cc : chatRoom) {
-			cc.sendMsg(m);
-		}
+		chatRoom.broadcast(m);
 	}
 	
 	private void consume(JoinMessage m) {
 		// Get or create chat room
 		String room = m.getRoom();
-		List<ClientConnection> chatRoom = roomList.get(room);
+		ServerChatRoom chatRoom = roomList.get(room);
 		if (chatRoom == null) {
-			chatRoom = new ArrayList<ClientConnection>();
+			chatRoom = new ServerChatRoom(room);
 			roomList.put(room, chatRoom);
 		}
 		
 		// Broadcast join
-		for (ClientConnection client : chatRoom) {
-			client.sendMsg(m);
-		}
+		chatRoom.broadcast(m);
 
 		// Add client to room
 		ClientConnection cc = clientList.get(m.getFrom());
-		chatRoom.add(cc);
+		chatRoom.addConnection(cc);
+		cc.addConnection(chatRoom);
 		
 		// Gather list of participants
-		List<String> participants = new ArrayList<String>();
-		for (ClientConnection client : chatRoom) {
-			String nick = client.getNick();
-			participants.add(nick);
-		}
 		ListParticipantsMessage msg = new ListParticipantsMessage();
-		msg.setParticipants(participants);
+		msg.setParticipants(chatRoom.getParticipants());
 		msg.setRoom(room);
 		cc.sendMsg(msg);
 	}
@@ -116,18 +107,17 @@ public class MessageConsumerThread extends Thread {
 	private void consume(PartMessage m) {
 		// Remove from room
 		String room = m.getRoom();
-		List<ClientConnection> chatRoom = roomList.get(room);
+		ServerChatRoom chatRoom = roomList.get(room);
 		if (chatRoom == null) {
 			return; // TODO: handle error, room does not exist
 		}
 		String nick = m.getFrom();
 		ClientConnection cc = clientList.get(nick);
-		chatRoom.remove(cc);
+		chatRoom.removeConnection(cc);
+		cc.removeConnection(chatRoom);
 		
 		// Broadcast part
-		for (ClientConnection client : chatRoom) {
-			client.sendMsg(m);
-		}
+		chatRoom.broadcast(m);
 	}
 	
 	private void consume(ConnectMessage m) {
@@ -139,43 +129,14 @@ public class MessageConsumerThread extends Thread {
 	}
 	
 	private void consume(DisconnectMessage m) {
-		/*
-		 * Warning: really bad and slow implementation if we get a lot of
-		 * rooms and users on the server.
-		 */
-		ArrayList<List<ClientConnection>> toRemoveFrom = new ArrayList<List<ClientConnection>>();
-		for (String room : roomList.keySet()) {
-			List<ClientConnection> ccList = roomList.get(room);
-			for (ClientConnection cc : ccList) {
-				if (cc.getNick().equals(m.getFrom())) {
-					// Remove the user from the room. The actual removal comes later
-					toRemoveFrom.add(ccList);
-					
-					// Generate list of still connected users, and put into a msg
-					ListParticipantsMessage listMsg = new ListParticipantsMessage();
-					listMsg.setRoom(room);
-					ArrayList<String> listOfNicks = new ArrayList<String>();
-					for (ClientConnection stillConnected : ccList) {
-						if (stillConnected != cc)
-							listOfNicks.add(stillConnected.getNick());
-					}
-					listMsg.setParticipants(listOfNicks);
-					
-					// Notify still connected users
-					for (ClientConnection stillConnected : ccList) {
-						// TODO Also/Or send a DisconnectMessage to the other people in the room?
-						stillConnected.sendMsg(listMsg);
-					}
-				}
-			}
+		ClientConnection cc = clientList.get(m.getFrom());
+		
+		for (Broadcastable b : cc.getConnections()) {
+			b.removeConnection(cc);
+			b.broadcast(m);
 		}
 		
-		// The actual removal of user. Done here because of concurrency-problems.
-		ClientConnection cc = clientList.get(m.getFrom());
-		for (List<ClientConnection> ccList : toRemoveFrom) {
-			ccList.remove(cc);
-		}
-		clientList.get(m.getFrom()).disconnect();
+		cc.disconnect();
 		clientList.remove(m.getFrom());
 	}
 	
@@ -191,8 +152,9 @@ public class MessageConsumerThread extends Thread {
 		clientList.remove(cc.getNick());
 		cc.setNick(newNick);
 		clientList.put(newNick, cc);
-		for (ClientConnection sendTo : clientList.values()) {
-			sendTo.sendMsg(m);
+		
+		for (Broadcastable b : cc.getConnections()) {
+			b.broadcast(m);
 		}
 	}
 
