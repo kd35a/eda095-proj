@@ -316,8 +316,8 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 			String room = JOptionPane.showInputDialog(parent, "Which room do"
 					+ " you want to join?", "Join chatroom",
 					JOptionPane.PLAIN_MESSAGE);
-			room = room.trim();
 			if (room != null && !room.isEmpty()) {
+				room = room.trim();
 				joinChatroom(room);
 			}
 		}
@@ -336,8 +336,8 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 			String nick = JOptionPane.showInputDialog(parent, "New nickname: "
 					, "New nickname",
 					JOptionPane.PLAIN_MESSAGE);
-			nick = nick.trim();
 			if (nick != null && !nick.isEmpty()) {
+				nick = nick.trim();
 				NickMessage nm = new NickMessage();
 				nm.setFrom(client.getNick());
 				nm.setNick(nick);
