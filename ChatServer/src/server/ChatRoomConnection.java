@@ -5,12 +5,12 @@ import java.util.List;
 
 import message.Message;
 
-public class ServerChatRoom implements Broadcastable {
+public class ChatRoomConnection implements Broadcastable {
 	
 	private String name;
 	private ArrayList<ClientConnection> clientConnections;
 	
-	public ServerChatRoom(String name) {
+	public ChatRoomConnection(String name) {
 		this.name = name;
 		clientConnections = new ArrayList<ClientConnection>();
 	}

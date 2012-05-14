@@ -25,3 +25,10 @@ Disconnect
 Set nickname
 ============
 { "nick": { "nick": "v" } }
+
+Initiate file transfer
+======================
+{ "fileinit": { "filename": "test.jpg", "size": 15123, "to": "u1", "time": "2012-05-09 11:35:22 +0200" } }
+
+Accept file
+{ "fileacc": { "host": "123.123.123.123", "port": 1994, "to": "u2", "time": "2012-05-09 11:35:22 +0200" } }

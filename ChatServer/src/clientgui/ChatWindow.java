@@ -35,6 +35,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
@@ -96,12 +97,16 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 		participantsList.setPreferredSize(new Dimension(200, 0));
 		participantsList.addMouseListener(new ParticipantListListener(this,
 				participantsList));
+
 		scrollPane = new JScrollPane(participantsList);
-		mainPanel.add(scrollPane, BorderLayout.WEST);
 
 		tabbedPane = new JTabbedPane();
 		tabbedPane.addChangeListener(new TabChanged());
-		mainPanel.add(tabbedPane, BorderLayout.CENTER);
+
+		JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		split.add(scrollPane);
+		split.add(tabbedPane);
+		mainPanel.add(split, BorderLayout.CENTER);
 
 		southPanel = new JPanel(new BorderLayout(2, 2));
 
@@ -202,7 +207,7 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 					pane.remove(i);
 				}
 				PartMessage msg = new PartMessage();
-				msg.setRoom(room);
+				msg.setRoom(room.substring(1));
 				client.sendMessage(msg);
 			}
 
@@ -362,17 +367,21 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 
 		@Override
 		public void stateChanged(ChangeEvent ce) {
-			int index = tabbedPane.getSelectedIndex();
-			if (index != -1) {
-				String room = tabbedPane.getTitleAt(index);
-				Vector<String> data = client.getChatRoomParticipants(room);
-				if (data != null)
-					participantsList.setListData(data);
-			} else {
-				participantsList.setListData(new String[] { "" });
-			}
+			updateParticipants();
 		}
 
+	}
+	
+	private void updateParticipants() {
+		int index = tabbedPane.getSelectedIndex();
+		if (index != -1) {
+			String room = tabbedPane.getTitleAt(index);
+			Vector<String> data = client.getChatRoomParticipants(room.substring(1));
+			if (data != null)
+				participantsList.setListData(data);
+		} else {
+			participantsList.setListData(new String[] { "" });
+		}
 	}
 
 	protected void sendMessage(Message msg) {
@@ -396,12 +405,7 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 		} else if (arg instanceof PrivateMessage) {
 			putMessage((PrivateMessage) arg);
 		} else if (arg == null) {
-			int index = tabbedPane.getSelectedIndex();
-			if (index != -1) {
-				String room = tabbedPane.getTitleAt(index);
-				participantsList.setListData(client
-						.getChatRoomParticipants(room.substring(1)));
-			}
+			updateParticipants();
 		}
 	}
 

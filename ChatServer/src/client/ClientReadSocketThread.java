@@ -8,6 +8,8 @@ import java.net.Socket;
 import message.ChatroomMessage;
 import message.ConnectMessage;
 import message.DisconnectMessage;
+import message.FileAcceptMessage;
+import message.FileInitMessage;
 import message.JoinMessage;
 import message.ListParticipantsMessage;
 import message.Message;
@@ -73,6 +75,10 @@ public class ClientReadSocketThread extends Thread {
 					consume((WelcomeMessage) msg);
 				else if (type.equals(ListParticipantsMessage.TYPE))
 					consume((ListParticipantsMessage) msg);
+				else if (type.equals(FileInitMessage.TYPE))
+					consume((FileInitMessage) msg);
+				else if (type.equals(FileAcceptMessage.TYPE))
+					consume((FileAcceptMessage) msg);
 				else
 					System.err.println("Unknown message. Doing nothing.");
 			} catch (IOException e) {
@@ -131,6 +137,26 @@ public class ClientReadSocketThread extends Thread {
 	
 	private void consume(ListParticipantsMessage msg) {
 		client.setChatRoomParticipants(msg.getRoom(), msg.getParticipants());
+	}
+
+	private void consume(FileInitMessage msg) {
+		/*
+		 * TODO: Implement me.
+		 * Someone wants to send a file to this client.
+		 * We get info about the filename, size etc.
+		 * If the client decides to accept the file, he
+		 * sends a FileAcceptMessage to the sending client,
+		 * and starts an accepting serversocket in a new thread.
+		 */
+	}
+	
+	private void consume(FileAcceptMessage msg) {
+		/*
+		 * TODO: Implement me.
+		 * This client decides to accept a file. He
+		 * sends his credentials (hostname and port) to
+		 * the other client.
+		 */
 	}
 
 	public void disconnect() {
