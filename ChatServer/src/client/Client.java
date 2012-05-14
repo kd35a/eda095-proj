@@ -25,7 +25,8 @@ public class Client extends Observable {
 	private Socket socket;
 	private Mailbox<Message> inbox;
 	private Mailbox<Message> outbox;
-	private String nickname;
+	private String nickname = "";
+	private String newNickname;
 	private HashMap<String, ChatRoom> chatRooms;
 	private ClientReadSocketThread clientRST;
 	private ClientWriteSocketThread clientWST;
@@ -119,6 +120,21 @@ public class Client extends Observable {
 	public void handleMessage(Message msg) {
 		setChanged();
 		notifyObservers(msg);
+	}
+
+	public void setNewNickname(String nick) {
+		this.newNickname = nick;
+	}
+	
+	public String getNewNickname() {
+		return this.newNickname;
+	}
+
+	public void renameChatRoomParticipant(String oldNick, String newNick) {
+		for (ChatRoom cr : chatRooms.values()) {
+			cr.renameChatRoomParticipant(oldNick, newNick);
+		}
+		chatWindow.repaint();
 	}
 
 }
