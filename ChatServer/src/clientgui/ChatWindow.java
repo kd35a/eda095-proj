@@ -17,9 +17,11 @@ import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Vector;
 
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
@@ -90,9 +92,10 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 		getContentPane().add(mainPanel);
 		mainPanel.setLayout(new BorderLayout(2, 2));
 
-		participantsList = new JList(new String[]{""});
+		participantsList = new JList(new String[] { "" });
 		participantsList.setPreferredSize(new Dimension(200, 0));
-		participantsList.addMouseListener(new ParticipantListListener(this, participantsList));
+		participantsList.addMouseListener(new ParticipantListListener(this,
+				participantsList));
 		scrollPane = new JScrollPane(participantsList);
 		mainPanel.add(scrollPane, BorderLayout.WEST);
 
@@ -123,40 +126,33 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 	private void joinChatroom(String name) {
 		ChatPanel c = new ChatPanel();
 		client.joinRoom(name);
+		name = "#" + name;
 		chatrooms.put(name, c);
 		int index = tabbedPane.getTabCount();
-		tabbedPane.add("#" + name, c);
-		tabbedPane.setTabComponentAt(index, new TabComponent(tabbedPane));
+		tabbedPane.add(name, c);
+		tabbedPane.setTabComponentAt(index, new TabComponent(name, tabbedPane));
 	}
-	
+
 	public void joinPrivateRoom(String name) {
 		ChatPanel c = new ChatPanel();
 		chatrooms.put(name, c);
 		int index = tabbedPane.getTabCount();
 		tabbedPane.add(name, c);
-		tabbedPane.setTabComponentAt(index, new TabComponent(tabbedPane));
+		tabbedPane.setTabComponentAt(index, new TabComponent(name, tabbedPane));
 	}
 
 	private class TabComponent extends JPanel {
 
 		private final JTabbedPane pane;
 
-		private TabComponent(final JTabbedPane pane) {
+		private TabComponent(String name, final JTabbedPane pane) {
 			super(new FlowLayout(FlowLayout.LEFT, 0, 0));
 
 			this.pane = pane;
 
 			setOpaque(false);
 
-			JLabel label = new JLabel() {
-				public String getText() {
-					int i = pane.indexOfTabComponent(TabComponent.this);
-					if (i != -1) {
-						return pane.getTitleAt(i);
-					}
-					return null;
-				}
-			};
+			JLabel label = new JLabel(name);
 			label.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
 			add(label);
 
@@ -247,7 +243,7 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 
 		JMenuItem serverJoinRoom = new JMenuItem("Join room...");
 		serverJoinRoom.addActionListener(new JoinRoomActionListener(this));
-		
+
 		JMenuItem serverChangeNick = new JMenuItem("Change nickname");
 		serverChangeNick.addActionListener(new ChangeNickActionListener(this));
 
@@ -270,9 +266,9 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 			int index = tabbedPane.getSelectedIndex();
 			if (index != -1) {
 				String to = tabbedPane.getTitleAt(index);
-				
+
 				Message m = null;
-				
+
 				if (to.charAt(0) == '#') {
 					ChatroomMessage cm = new ChatroomMessage();
 					cm.setMsg(msg);
@@ -349,9 +345,8 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			String nick = JOptionPane.showInputDialog(parent, "New nickname: "
-					, "New nickname",
-					JOptionPane.PLAIN_MESSAGE);
+			String nick = JOptionPane.showInputDialog(parent, "New nickname: ",
+					"New nickname", JOptionPane.PLAIN_MESSAGE);
 			if (nick != null && !nick.isEmpty()) {
 				nick = nick.trim();
 				NickMessage nm = new NickMessage();
@@ -370,10 +365,11 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 			int index = tabbedPane.getSelectedIndex();
 			if (index != -1) {
 				String room = tabbedPane.getTitleAt(index);
-				participantsList.setListData(client
-						.getChatRoomParticipants(room));
+				Vector<String> data = client.getChatRoomParticipants(room);
+				if (data != null)
+					participantsList.setListData(data);
 			} else {
-				participantsList.setListData(new String[]{""});
+				participantsList.setListData(new String[] { "" });
 			}
 		}
 
@@ -387,25 +383,10 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 	public void putMessage(ChatroomMessage msg) {
 		chatrooms.get("#" + msg.getRoom()).putMessage(msg);
 	}
-	
+
 	@Override
 	public void putMessage(PrivateMessage msg) {
 		chatrooms.get(msg.getTo()).putMessage(msg);
-	}
-
-	public void repaint() {
-		super.repaint();
-		int index = tabbedPane.getSelectedIndex();
-		if (index == -1 && tabbedPane.getTabCount() > 0) {
-			index = 0;
-			tabbedPane.setSelectedIndex(index);
-		} else if (index == -1) {
-			participantsList.setListData(new String[0]);
-			System.err.println("Something's goofy");
-			return;
-		}
-		String room = tabbedPane.getTitleAt(index);
-		participantsList.setListData(client.getChatRoomParticipants(room));
 	}
 
 	@Override
@@ -413,7 +394,14 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 		if (arg instanceof ChatroomMessage) {
 			putMessage((ChatroomMessage) arg);
 		} else if (arg instanceof PrivateMessage) {
-
+			putMessage((PrivateMessage) arg);
+		} else if (arg == null) {
+			int index = tabbedPane.getSelectedIndex();
+			if (index != -1) {
+				String room = tabbedPane.getTitleAt(index);
+				participantsList.setListData(client
+						.getChatRoomParticipants(room.substring(1)));
+			}
 		}
 	}
 

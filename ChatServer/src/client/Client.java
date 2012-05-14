@@ -19,7 +19,8 @@ import message.Message;
 import common.Mailbox;
 
 public class Client extends Observable {
-	private static SimpleDateFormat df = new SimpleDateFormat("d MMM yyyy hh:mm:ss");
+	private static SimpleDateFormat df = new SimpleDateFormat(
+			"d MMM yyyy hh:mm:ss");
 
 	private String serverName;
 	private Socket socket;
@@ -39,17 +40,17 @@ public class Client extends Observable {
 		inbox = new Mailbox<Message>();
 		outbox = new Mailbox<Message>();
 		chatRooms = new HashMap<String, ChatRoom>();
-		
+
 		clientRST = new ClientReadSocketThread(this, socket, inbox);
 		clientRST.start();
 		clientWST = new ClientWriteSocketThread(socket, outbox);
 		clientWST.start();
 	}
-	
+
 	public String getServerName() {
 		return serverName;
 	}
-	
+
 	public void sendMessage(Message msg) {
 		outbox.put(msg);
 	}
@@ -57,11 +58,11 @@ public class Client extends Observable {
 	public void setNick(String nick) {
 		this.nickname = nick;
 	}
-	
+
 	public String getNick() {
 		return this.nickname;
 	}
-	
+
 	public void joinRoom(String room) {
 		ChatRoom cr = new ChatRoom();
 		chatRooms.put(room, cr);
@@ -74,34 +75,37 @@ public class Client extends Observable {
 
 	public void setChatRoomParticipants(String room, List<String> participants) {
 		chatRooms.get(room).setParticipants(participants);
-		if (chatWindow != null) {
-			chatWindow.repaint();
-		}
+		setChanged();
+		notifyObservers();
 	}
-	
-	public Vector<String> getChatRoomParticipants(String room) {
-		return chatRooms.get(room).getParticipants();
-	}
-	
+
 	public void addChatRoomParticipant(String room, String name) {
-		chatRooms.get(room).addParticipant(name);
-		if (chatWindow != null) {
-			chatWindow.repaint();
-		}
+		ChatRoom cr = chatRooms.get(room);
+		cr.addParticipant(name);
+		setChanged();
+		notifyObservers();
 	}
-	
+
 	public void removeChatRoomParticipant(String room, String name) {
-		chatRooms.get(room).removeParticipant(name);
-		if (chatWindow != null) {
-			chatWindow.repaint();
-		}
+		ChatRoom cr = chatRooms.get(room);
+		cr.removeParticipant(name);
+		setChanged();
+		notifyObservers();
 	}
-	
+
 	public void removeChatRoomParticipant(String name) {
 		for (ChatRoom cr : chatRooms.values()) {
 			cr.removeParticipant(name);
 		}
-		chatWindow.repaint();
+		setChanged();
+		notifyObservers();
+	}
+
+	public Vector<String> getChatRoomParticipants(String room) {
+		ChatRoom cr = chatRooms.get(room);
+		if (cr != null)
+			return cr.getParticipants();
+		return null;
 	}
 
 	public void disconnect() {
@@ -119,11 +123,11 @@ public class Client extends Observable {
 	public void setChatWindow(ChatWindow chatWindow) {
 		this.chatWindow = chatWindow;
 	}
-	
+
 	public ChatWindow getChatWindow() {
 		return chatWindow;
 	}
-	
+
 	public void handleMessage(Message msg) {
 		setChanged();
 		notifyObservers(msg);
@@ -132,7 +136,7 @@ public class Client extends Observable {
 	public void setNewNickname(String nick) {
 		this.newNickname = nick;
 	}
-	
+
 	public String getNewNickname() {
 		return this.newNickname;
 	}
