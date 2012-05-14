@@ -146,6 +146,8 @@ public class ClientReadSocketThread extends Thread {
 		 * sends a FileAcceptMessage to the sending client,
 		 * and starts an accepting serversocket in a new thread.
 		 */
+		if (!msg.getFrom().equals(client.getNick()))
+			client.handleMessage(msg);
 	}
 	
 	private void consume(FileAcceptMessage msg) {
@@ -155,6 +157,8 @@ public class ClientReadSocketThread extends Thread {
 		 * sends his credentials (hostname and port) to
 		 * the other client.
 		 */
+		if (!msg.getFrom().equals(client.getNick()))
+			client.handleMessage(msg);
 	}
 
 	public void disconnect() {

@@ -55,6 +55,10 @@ public class ClientConnection {
 		return connections;
 	}
 	
+	public synchronized String getHostname() {
+		return socket.getInetAddress().getHostAddress();
+	}
+	
 	public void disconnect() {
 		try {
 			socket.close();

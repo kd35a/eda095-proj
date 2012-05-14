@@ -73,6 +73,10 @@ public abstract class Message {
 				msg = new ListParticipantsMessage();
 			else if (type.equals("error"))
 				msg = new ErrorMessage();
+			else if (type.equals("fileinit"))
+				msg = new FileInitMessage();
+			else if (type.equals("fileacc"))
+				msg = new FileAcceptMessage();
 			else
 				throw new ParseException(ParseException.ERROR_UNEXPECTED_TOKEN);
 			
@@ -86,5 +90,8 @@ public abstract class Message {
 		return null;
 	}
 
+	protected int safeLongToInt(long l) {
+	    return (int) Math.min(Integer.MAX_VALUE, l);
+	}
 
 }

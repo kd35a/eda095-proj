@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
@@ -28,7 +29,11 @@ import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import com.sun.jmx.remote.internal.ClientListenerInfo;
+
 import message.ChatroomMessage;
+import message.FileAcceptMessage;
+import message.FileInitMessage;
 import message.Message;
 import message.NickMessage;
 import message.PrivateMessage;
@@ -41,6 +46,9 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 
 	private Map<String, ChatPanel> chatrooms;
 	private Client client;
+	
+	private int fileID;
+	private Map<Integer, FileSenderThread> fileTransfers;
 
 	/*
 	 * GUI components
@@ -56,8 +64,10 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 
 	public ChatWindow(Client client) {
 		this.client = client;
+		fileID = 0;
 		client.setChatWindow(this);
 		chatrooms = new HashMap<String, ChatPanel>();
+		fileTransfers = new HashMap<Integer, FileSenderThread>();
 
 		initGUI();
 	}
@@ -307,9 +317,45 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 				joinPrivateRoom(pm.getFrom());
 			}
 			putMessage((PrivateMessage) arg);
+		} else if (arg instanceof FileInitMessage) {
+			FileInitMessage fim = (FileInitMessage) arg;
+			String from = fim.getFrom();
+			String filename = fim.getFilename();
+			long size = fim.getSize();
+			int id = fim.getFileID();
+			
+			FileTransferDialog ftd = new FileTransferDialog(client, from, filename, size, id);
+		} else if (arg instanceof FileAcceptMessage) {
+			FileAcceptMessage fam = (FileAcceptMessage) arg;
+			String host = fam.getHost();
+			int port = fam.getPort();
+			int id = fam.getFileID();
+			
+			FileSenderThread fst = fileTransfers.get(id);
+			fst.setReceiver(host, port);
+			System.out.println("Starting file transfer!!");
+			fst.start();
+			
 		} else if (arg == null) {
 			updateParticipants();
 		}
+	}
+
+	public void sendFile(String to, File f) {
+		System.out.println("Har valt att skicka filen " + f.getName() +
+				"som är " + f.length() + " bytes stor");
+		FileInitMessage fm = new FileInitMessage();
+		fm.setFileID(fileID);
+		fm.setFilename(f.getName());
+		fm.setSize(f.length());
+		fm.setTo(to);
+		
+		FileSenderThread fst = new FileSenderThread(f);
+		fileTransfers.put(fileID, fst);
+		
+		client.sendMessage(fm);
+		
+		fileID++;
 	}
 
 }

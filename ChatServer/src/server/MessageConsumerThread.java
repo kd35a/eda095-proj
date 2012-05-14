@@ -6,6 +6,8 @@ import message.ChatroomMessage;
 import message.ConnectMessage;
 import message.DisconnectMessage;
 import message.ErrorMessage;
+import message.FileAcceptMessage;
+import message.FileInitMessage;
 import message.JoinMessage;
 import message.ListParticipantsMessage;
 import message.Message;
@@ -51,12 +53,17 @@ public class MessageConsumerThread extends Thread {
 				consume((DisconnectMessage) msg);
 			else if (type.equals(NickMessage.TYPE))
 				consume((NickMessage) msg);
+			else if (type.equals(FileInitMessage.TYPE))
+				consume((FileInitMessage) msg);
+			else if (type.equals(FileAcceptMessage.TYPE))
+				consume((FileAcceptMessage) msg);
 			else
 				System.err.println("Unknown message. Doing nothing.");
 			
 		}
 	}
 	
+
 	private void consume(PrivateMessage m) {
 		ClientConnection to = clientList.get(m.getTo());
 		ClientConnection from = clientList.get(m.getFrom());
@@ -174,6 +181,37 @@ public class MessageConsumerThread extends Thread {
 		for (Broadcastable b : cc.getConnections()) {
 			b.broadcast(m);
 		}
+	}
+
+	private void consume(FileInitMessage m) {
+		ClientConnection to = clientList.get(m.getTo());
+		ClientConnection from = clientList.get(m.getFrom());
+		
+		if (to == null) {
+			from = clientList.get(m.getFrom());
+			ErrorMessage err = new ErrorMessage();
+			err.setMsg("User " + m.getTo() + " not found.");
+			from.sendMsg(err);
+			return;
+		}
+		
+		to.sendMsg(m);
+	}
+
+	private void consume(FileAcceptMessage m) {
+		ClientConnection to = clientList.get(m.getTo());
+		ClientConnection from = clientList.get(m.getFrom());
+		
+		if (to == null) {
+			from = clientList.get(m.getFrom());
+			ErrorMessage err = new ErrorMessage();
+			err.setMsg("User " + m.getTo() + " not found.");
+			from.sendMsg(err);
+			return;
+		}
+		
+		m.setHost(from.getHostname());		
+		to.sendMsg(m);
 	}
 
 }

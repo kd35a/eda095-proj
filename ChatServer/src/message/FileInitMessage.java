@@ -15,12 +15,12 @@ public class FileInitMessage extends Message {
 		return (String) values.get("filename");
 	}
 	
-	public void setSize(int i) {
+	public void setSize(long i) {
 		values.put("size", i);
 	}
 	
-	public int getSize() {
-		return (Integer) values.get("size");
+	public long getSize() {
+		return (Long) values.get("size");
 	}
 	
 	public void setTo(String s) {
@@ -29,6 +29,14 @@ public class FileInitMessage extends Message {
 	
 	public String getTo() {
 		return (String) values.get("to");
+	}
+
+	public void setFileID(int i) {
+		values.put("fileid", i);
+	}
+	
+	public int getFileID() {
+		return safeLongToInt((Long) values.get("fileid"));
 	}
 
 }

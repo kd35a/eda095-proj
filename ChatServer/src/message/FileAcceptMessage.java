@@ -15,12 +15,12 @@ public class FileAcceptMessage extends Message {
 		return (String) values.get("host");
 	}
 	
-	public void setPort(int i) {
+	public void setPort(long i) {
 		values.put("port", i);
 	}
 	
 	public int getPort() {
-		return (Integer) values.get("port");
+		return safeLongToInt((Long) values.get("port"));
 	}
 	
 	public void setTo(String s) {
@@ -30,5 +30,15 @@ public class FileAcceptMessage extends Message {
 	public String getTo() {
 		return (String) values.get("to");
 	}
+
+	public void setFileID(int i) {
+		values.put("fileid", i);
+	}
+	
+	public int getFileID() {
+		return safeLongToInt((Long) values.get("fileid"));
+	}
+	
+
 
 }
