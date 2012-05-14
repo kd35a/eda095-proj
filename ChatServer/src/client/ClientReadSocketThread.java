@@ -87,11 +87,18 @@ public class ClientReadSocketThread extends Thread {
 
 	private void consume(WelcomeMessage msg) {
 		client.setNick(msg.getNick());
+		String newNickname = client.getNewNickname();
+		if (newNickname != null && !newNickname.equals("")) {
+			NickMessage nm = new NickMessage();
+			nm.setFrom(msg.getNick());
+			nm.setNick(newNickname);
+			client.sendMessage(nm);
+			client.setNewNickname("");
+		}
 	}
 
 	private void consume(NickMessage msg) {
-		// TODO Auto-generated method stub
-		
+		client.renameChatRoomParticipant(msg.getFrom(), msg.getNick());
 	}
 
 	private void consume(DisconnectMessage msg) {

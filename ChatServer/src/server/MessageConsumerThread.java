@@ -191,10 +191,9 @@ public class MessageConsumerThread extends Thread {
 		clientList.remove(cc);
 		cc.setNick(newNick);
 		clientList.put(newNick, cc);
-		/* TODO: Probably want to broadcast message to all
-		 * clients associated to this one (chatrooms, pm-connections
-		 * etc. )
-		 */
+		for (ClientConnection sendTo : clientList.values()) {
+			sendTo.sendMsg(m);
+		}
 	}
 
 }

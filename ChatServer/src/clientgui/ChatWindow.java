@@ -40,6 +40,7 @@ import javax.swing.event.ChangeListener;
 
 import message.ChatroomMessage;
 import message.Message;
+import message.NickMessage;
 import message.PartMessage;
 import message.PrivateMessage;
 import client.Client;
@@ -236,9 +237,13 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 
 		JMenuItem serverJoinRoom = new JMenuItem("Join room...");
 		serverJoinRoom.addActionListener(new JoinRoomActionListener(this));
+		
+		JMenuItem serverChangeNick = new JMenuItem("Change nickname");
+		serverChangeNick.addActionListener(new ChangeNickActionListener(this));
 
 		serverMenu.add(serverDisconnect);
 		serverMenu.add(serverJoinRoom);
+		serverMenu.add(serverChangeNick);
 
 		menuBar.add(fileMenu);
 		menuBar.add(serverMenu);
@@ -312,6 +317,29 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 			room = room.trim();
 			if (room != null && !room.isEmpty()) {
 				joinChatroom(room);
+			}
+		}
+
+	}
+
+	private class ChangeNickActionListener implements ActionListener {
+		private ChatWindow parent;
+
+		public ChangeNickActionListener(ChatWindow parent) {
+			this.parent = parent;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String nick = JOptionPane.showInputDialog(parent, "New nickname: "
+					, "New nickname",
+					JOptionPane.PLAIN_MESSAGE);
+			nick = nick.trim();
+			if (nick != null && !nick.isEmpty()) {
+				NickMessage nm = new NickMessage();
+				nm.setFrom(client.getNick());
+				nm.setNick(nick);
+				client.sendMessage(nm);
 			}
 		}
 

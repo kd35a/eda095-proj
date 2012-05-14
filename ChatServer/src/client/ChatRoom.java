@@ -26,4 +26,11 @@ public class ChatRoom {
 		participants.remove(name);
 	}
 
+	public void renameChatRoomParticipant(String oldNick, String newNick) {
+		int index = participants.indexOf(oldNick);
+		if (index >= 0 && index < participants.size()) {
+			participants.set(index, newNick);
+		}
+	}
+
 }
