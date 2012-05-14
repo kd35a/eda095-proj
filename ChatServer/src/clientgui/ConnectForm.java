@@ -109,7 +109,8 @@ public class ConnectForm extends JFrame implements Runnable {
 				try {
 					client = new Client(host, port);
 				} catch (IOException e) {
-					e.printStackTrace();
+					JOptionPane.showMessageDialog(parent, "Could not connect to server.", "Connection error", JOptionPane.ERROR_MESSAGE);
+					return;
 				}
 				
 				ChatWindow cw = new ChatWindow(client);
