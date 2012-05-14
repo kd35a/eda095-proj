@@ -143,15 +143,17 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 			messageInputField.setText("");
 			
 			int index = tabbedPane.getSelectedIndex();
-			String room = tabbedPane.getTitleAt(index); 
-			
-			ChatroomMessage m = new ChatroomMessage();
-			m.setMsg(msg);
-			m.setRoom(room);
-			
-			// putMessage(m);
-			
-			client.sendMessage(m);
+			if(index != -1) {
+				String room = tabbedPane.getTitleAt(index); 
+				
+				ChatroomMessage m = new ChatroomMessage();
+				m.setMsg(msg);
+				m.setRoom(room);
+				
+				// putMessage(m);
+				
+				client.sendMessage(m);				
+			}
 		}
 		
 	}
