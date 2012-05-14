@@ -188,7 +188,7 @@ public class MessageConsumerThread extends Thread {
 			cc.sendMsg(err);
 			return;
 		}
-		clientList.remove(cc);
+		clientList.remove(cc.getNick());
 		cc.setNick(newNick);
 		clientList.put(newNick, cc);
 		for (ClientConnection sendTo : clientList.values()) {
