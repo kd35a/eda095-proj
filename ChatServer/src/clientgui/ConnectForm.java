@@ -75,6 +75,7 @@ public class ConnectForm extends JFrame implements Runnable {
 				.addComponent(connectButton)
 				);
 		
+		setLocationRelativeTo(null);
 		setVisible(true);
 		pack();
 	}
