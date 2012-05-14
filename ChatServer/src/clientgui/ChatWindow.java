@@ -7,7 +7,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -27,6 +29,7 @@ import javax.swing.event.ChangeListener;
 
 import message.ChatroomMessage;
 import message.Message;
+import message.PrivateMessage;
 import client.Client;
 
 public class ChatWindow extends JFrame implements ClientGUI, Observer {
@@ -34,7 +37,7 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 	private static final long serialVersionUID = 1L;
 	private static final String PROGRAM_NAME = "ChatServer";
 	
-	private List<ChatRoomPanel> chatrooms;
+	private Map<String, ChatRoomPanel> chatrooms;
 	private Client client;
 	
 	/*
@@ -52,7 +55,7 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 	public ChatWindow(Client client) {
 		this.client = client;
 		client.setChatWindow(this);
-		chatrooms = new ArrayList<ChatRoomPanel>();
+		chatrooms = new HashMap<String, ChatRoomPanel>();
 		
 		initGUI();
 	}
@@ -104,7 +107,7 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 	private void joinChatroom(String name) {
 		ChatRoomPanel c = new ChatRoomPanel();
 		client.joinRoom(name);
-		chatrooms.add(c);
+		chatrooms.put(name, c);
 		tabbedPane.addTab(name, c);
 	}
 
@@ -220,8 +223,7 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 
 	@Override
 	public void putMessage(ChatroomMessage msg) {
-		int index = tabbedPane.getSelectedIndex();		
-		chatrooms.get(index).putMessage(msg);
+		chatrooms.get(msg.getRoom()).putMessage(msg);
 	}
 	
 	public void repaint() {
@@ -243,6 +245,8 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 	public void update(Observable o, Object arg) {
 		if (arg instanceof ChatroomMessage) {
 			putMessage((ChatroomMessage) arg);
+		} else if (arg instanceof PrivateMessage) {
+			
 		}
 	}
 
