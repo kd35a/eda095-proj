@@ -31,6 +31,7 @@ public class ChatRoomPanel extends JPanel {
 	
 	public void putMessage(ChatroomMessage m) {
 		text.append(m.getFrom() + ": " + m.getMsg() + "\n");
+		text.setCaretPosition(text.getDocument().getLength());
 	}
 	
 }
