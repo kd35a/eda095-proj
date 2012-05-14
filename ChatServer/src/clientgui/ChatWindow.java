@@ -356,6 +356,8 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 				String room = tabbedPane.getTitleAt(index);
 				participantsList.setListData(client
 						.getChatRoomParticipants(room));
+			} else {
+				participantsList.setListData(new String[]{""});
 			}
 		}
 
