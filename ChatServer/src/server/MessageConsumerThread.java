@@ -19,14 +19,15 @@ import message.WelcomeMessage;
 import common.Mailbox;
 
 public class MessageConsumerThread extends Thread {
-	
+
 	private String serverName;
 	private Mailbox<Message> messages;
 	private boolean active;
 	private ConcurrentHashMap<String, ClientConnection> clientList;
 	private ConcurrentHashMap<String, ChatRoomConnection> roomList;
-	
-	public MessageConsumerThread(String serverName, ConcurrentHashMap<String, ClientConnection> clientList, 
+
+	public MessageConsumerThread(String serverName,
+			ConcurrentHashMap<String, ClientConnection> clientList,
 			Mailbox<Message> messages) {
 		this.serverName = serverName;
 		this.clientList = clientList;
@@ -34,7 +35,7 @@ public class MessageConsumerThread extends Thread {
 		this.active = true;
 		this.roomList = new ConcurrentHashMap<String, ChatRoomConnection>();
 	}
-	
+
 	public void run() {
 		while (active) {
 			Message msg = messages.get();
@@ -59,15 +60,14 @@ public class MessageConsumerThread extends Thread {
 				consume((FileAcceptMessage) msg);
 			else
 				System.err.println("Unknown message. Doing nothing.");
-			
+
 		}
 	}
-	
 
 	private void consume(PrivateMessage m) {
 		ClientConnection to = clientList.get(m.getTo());
 		ClientConnection from = clientList.get(m.getFrom());
-		
+
 		if (to == null) {
 			from = clientList.get(m.getFrom());
 			ErrorMessage err = new ErrorMessage();
@@ -75,14 +75,14 @@ public class MessageConsumerThread extends Thread {
 			from.sendMsg(err);
 			return;
 		}
-		
+
 		/* Set up broadcastable connection link */
 		to.addConnection(new PrivateMessageConnection(from));
 		from.addConnection(new PrivateMessageConnection(to));
-		
+
 		to.sendMsg(m);
 	}
-	
+
 	private void consume(ChatroomMessage m) {
 		String room = m.getRoom();
 		ChatRoomConnection chatRoom = roomList.get(room);
@@ -91,7 +91,7 @@ public class MessageConsumerThread extends Thread {
 		}
 		chatRoom.broadcast(m);
 	}
-	
+
 	private void consume(JoinMessage m) {
 		// Get or create chat room
 		String room = m.getRoom();
@@ -100,7 +100,7 @@ public class MessageConsumerThread extends Thread {
 			chatRoom = new ChatRoomConnection(room);
 			roomList.put(room, chatRoom);
 		}
-		
+
 		// Broadcast join
 		chatRoom.broadcast(m);
 
@@ -108,14 +108,14 @@ public class MessageConsumerThread extends Thread {
 		ClientConnection cc = clientList.get(m.getFrom());
 		chatRoom.addConnection(cc);
 		cc.addConnection(chatRoom);
-		
+
 		// Gather list of participants
 		ListParticipantsMessage msg = new ListParticipantsMessage();
 		msg.setParticipants(chatRoom.getParticipants());
 		msg.setRoom(room);
 		cc.sendMsg(msg);
 	}
-	
+
 	private void consume(PartMessage m) {
 		// Remove from room
 		String room = m.getRoom();
@@ -127,14 +127,14 @@ public class MessageConsumerThread extends Thread {
 		ClientConnection cc = clientList.get(nick);
 		chatRoom.removeConnection(cc);
 		cc.removeConnection(chatRoom);
-		
+
 		// Broadcast part
 		chatRoom.broadcast(m);
 	}
-	
+
 	private void consume(ConnectMessage m) {
 		ClientConnection cc = clientList.get(m.getFrom());
-		
+
 		if (m.getNick() != null && clientList.get(m.getNick()) != null) {
 			ErrorMessage err = new ErrorMessage();
 			err.setMsg("Nickname " + m.getNick() + " is taken.");
@@ -146,25 +146,25 @@ public class MessageConsumerThread extends Thread {
 			cc.setNick(m.getNick());
 			clientList.put(cc.getNick(), cc);
 		}
-		
+
 		WelcomeMessage wm = new WelcomeMessage();
 		wm.setName(serverName);
 		wm.setNick(cc.getNick());
 		cc.sendMsg(wm);
 	}
-	
+
 	private void consume(DisconnectMessage m) {
 		ClientConnection cc = clientList.get(m.getFrom());
-		
+
 		for (Broadcastable b : cc.getConnections()) {
 			b.removeConnection(cc);
 			b.broadcast(m);
 		}
-		
+
 		cc.disconnect();
 		clientList.remove(m.getFrom());
 	}
-	
+
 	private void consume(NickMessage m) {
 		String newNick = m.getNick();
 		ClientConnection cc = clientList.get(m.getFrom());
@@ -177,7 +177,7 @@ public class MessageConsumerThread extends Thread {
 		clientList.remove(cc.getNick());
 		cc.setNick(newNick);
 		clientList.put(newNick, cc);
-		
+
 		for (Broadcastable b : cc.getConnections()) {
 			b.broadcast(m);
 		}
