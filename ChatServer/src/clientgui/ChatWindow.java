@@ -33,6 +33,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
@@ -91,14 +92,17 @@ public class ChatWindow extends JFrame implements ClientGUI, Observer {
 		mainPanel.setLayout(new BorderLayout(2, 2));
 
 		participantsList = new JList(new String[]{""});
-		participantsList.setPreferredSize(new Dimension(200, 0));
+		participantsList.setPreferredSize(new Dimension(120, 0));
 		participantsList.addMouseListener(new ParticipantListListener(participantsList));
 		scrollPane = new JScrollPane(participantsList);
-		mainPanel.add(scrollPane, BorderLayout.WEST);
 
 		tabbedPane = new JTabbedPane();
 		tabbedPane.addChangeListener(new TabChanged());
-		mainPanel.add(tabbedPane, BorderLayout.CENTER);
+		
+		JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		split.add(scrollPane);
+		split.add(tabbedPane);
+		mainPanel.add(split, BorderLayout.CENTER);
 
 		southPanel = new JPanel(new BorderLayout(2, 2));
 
