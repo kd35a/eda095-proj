@@ -50,6 +50,27 @@ to be done by the <a href="http://code.google.com/p/json-simple/">json-simple</a
 
 to be done by the <a href="http://code.google.com/p/json-simple/">json-simple</a>-projects implementation.
 The JSON-messages are sent over a TCP-connection.</p>
+
+<h2>User manual</h2>
+<p>To start a server simply run the Server.jar file on the desired computer with the command:</p>
+
+<code>java -jar Server.jar &lt;name&gt; &lt;port&gt;</code>
+
+<p>Now clients can connect to the machine running the server. To launch a client simply run the Client.jar file with the command:</p>
+
+<code>java -jar Client.jar</code>
+<p>This gives you a connection dialog asking you which server to connect to. Input the host name of the machine running the server and the port that you supplied when you launched it and press <i>Connect</i>.</p>
+
+<p>You are now connected to the server! To join a chat room go to the menu and click <i>Server -&gt; Join room</i>... and input the name of the room you want to join. Other participants in the room will show up in the list on the left. To leave the chat room simply press the cross on the tab.</p>
+
+<p>To send a message simply write it in the bottom text field and press <i>Enter</i> och click the <i>Send message</i> button.</p>
+
+<p>To initiate a private conversation with someone right click on their name in the list on the left and click <i>Send Private Message</i>. This creates a new tab named after the participant you clicked on. Writing a message is done the same way as in a chat room but the message will now only go to the other person.</p>
+
+<p>File transfers are initiated much in the same way. Right click the participant you want to send the file to and choose <i>Send File</i>. This brings up a dialog where you can choose the file. Once you press <i>Open</i> the other party will be asked to accept the file you chose. If they do this the file transfer will start and soon they will have the file you sent.</p>
+
+<p>To disconnect from the server either press <i>File -&gt; Quit</i> in the menu or just click the cross at the top of the window.</p>
+
 <h2>Screenshots</h2>
 <a href="images/1.png"><img src="images/1_thumb.png" style="width: 200px; height: 149px;" /></a>
 <a href="images/2.png"><img src="images/2_thumb.png" style="width: 200px; height: 149px;"/></a>
