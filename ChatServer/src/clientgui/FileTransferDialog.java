@@ -6,9 +6,8 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -18,7 +17,7 @@ import message.FileAcceptMessage;
 import client.Client;
 import client.FileReceiverThread;
 
-public class FileTransferDialog extends JDialog {
+public class FileTransferDialog extends JFrame {
 
 	private JLabel text;
 	private JButton accept;
@@ -41,6 +40,8 @@ public class FileTransferDialog extends JDialog {
 	}
 	
 	private void initDialog() {
+		setTitle("File transfer from " + from);
+		
 		accept = new JButton("Accept");
 		accept.addActionListener(new ActionListener() {
 			@Override
