@@ -58,7 +58,12 @@ public class Server {
 	}
 
 	public static void main(String[] args) {
-		Server s = new Server("Quakenet", 1234);
+		if (args.length < 2) {
+			System.out.println("Usage: <name> <port>");
+		}
+		String name = args[0];
+		int port = Integer.parseInt(args[1]);
+		Server s = new Server(name, port);
 		s.start();
 	}
 
